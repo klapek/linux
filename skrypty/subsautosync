@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# 1. Sprawdzenie czy są 2 pliki
+if [ "$#" -ne 2 ]; then
+    notify-send -u critical "Błąd" "Zaznacz dokładnie 2 pliki."
+    exit 1
+fi
+
+SRT_FILE=""
+VIDEO_FILE=""
+
+# 2. Inteligentne rozpoznawanie plików
+for arg in "$@"; do
+    # Usuwamy ewentualny przedrostek file:// (czasem dodawany przez menedżery plików)
+    file=$(echo "$arg" | sed 's|^file://||')
+
+    if [[ "$file" == *.srt || "$file" == *.SRT ]]; then
+        SRT_FILE="$file"
+    else
+        # Jeśli nie SRT, to uznajemy, że to wideo (mp4, mkv, avi itp.)
+        VIDEO_FILE="$file"
+    fi
+done
+
+# 3. Weryfikacja czy mamy komplet
+if [ -z "$SRT_FILE" ] || [ -z "$VIDEO_FILE" ]; then
+    notify-send -u critical "Błąd" "Nie wykryto pary Wideo + SRT. Sprawdź rozszerzenia." -i dialog-error
+    exit 1
+fi
+
+# 4. Ścieżki i narzędzia
+FFSUB=$(which ffsubsync || echo "$HOME/.local/bin/ffsubsync")
+TEMP_SRT="${SRT_FILE}.tmp.srt"
+
+notify-send -t 10000 "FFsubsync" "Analizuję dźwięk i poprawiam napisy $(basename "$SRT_FILE")" -i dialog-ok
+
+# 5. Wykonanie z pełnym cytowaniem (obsługa spacji)
+if "$FFSUB" "$VIDEO_FILE" -i "$SRT_FILE" -o "$TEMP_SRT"; then
+    if [ -f "$TEMP_SRT" ]; then
+        # Nadpisanie oryginalnego pliku
+        mv -f "$TEMP_SRT" "$SRT_FILE"
+        notify-send "Sukces!" "Plik $(basename "$SRT_FILE") został zsynchronizowany i nadpisany." -i dialog-ok
+    else
+        notify-send -u critical "Błąd" "Błąd zapisu pliku tymczasowego." -i dialog-error
+    fi
+else
+    rm -f "$TEMP_SRT"
+    notify-send -u critical "Błąd" "FFsubsync zawiódł. Możliwy brak ścieżki audio." -i dialog-error
+fi

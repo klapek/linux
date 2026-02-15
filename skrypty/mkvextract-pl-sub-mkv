@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Powiadomienie o rozpoczęciu - ikona 'dialog-information' jest standardem
+notify-send "Skrypt MKV" "Rozpoczynam przetwarzanie zaznaczonych plików..." -i dialog-information
+
+count=0
+total=$#
+
+for filename in "$@"
+do
+    if [[ "$filename" == *.mkv ]]; then
+        ((count++))
+        
+        subs=$(mkvmerge -J "$filename" | jq -r '.tracks[] | select(.type=="subtitles") | select(.properties.language=="pol").id' | sed 'N;s/\n/,/') 
+        
+        if [[ -n $subs ]]; then
+             subs="-s $subs"
+        else
+            subs=-S
+        fi
+        
+        mkvmerge $subs -o "${filename%.mkv}-PLSUB.mkv" "$filename" > /dev/null 2>&1
+    fi
+done
+
+# Powiadomienie końcowe - używamy 'task-complete' lub 'dialog-ok'
+if [ $count -gt 0 ]; then
+    notify-send "Skrypt MKV - - -> Zakończono pomyślnie" "Przetworzono plików: $count" -i dialog-ok
+else
+    notify-send "Błąd" "Nie znaleziono odpowiednich plików .mkv do przetworzenia." -i dialog-error
+fi

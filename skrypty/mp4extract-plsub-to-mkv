@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Sprawdzenie czy notify-send jest zainstalowane
+NOTIFY=$(command -v notify-send)
+
+if [ -d "$1" ] || [ -f "$1" ]; then
+  DIR="$1"
+else
+  echo "Używam bieżącego katalogu '$(pwd)'"
+  DIR="." 
+fi
+
+# Powiadomienie o rozpoczęciu pracy
+[ -n "$NOTIFY" ] && $NOTIFY "FFmpeg Skrypt" "Rozpoczynam szukanie polskich napisów w $DIR" -i info
+
+find "$DIR" -maxdepth 1 -type f -name '*.mp4' -print0 | while read -d $'\0' -r filename
+do
+    sub_index=$(ffprobe -v error -select_streams s -show_entries stream=index:stream_tags=language -of csv=p=0 "$filename" | grep -i "pol" | head -n 1 | cut -d',' -f1)
+
+    if [[ -n "$sub_index" ]]; then
+        output="${filename%.mp4}-PLSUB.mkv"
+        echo -e "Przetwarzanie: \e[1m\e[34m$filename\e[0m"
+        
+        [ -n "$NOTIFY" ] && $NOTIFY "Przetwarzanie..." "$(basename "$filename")" -t 2000
+
+        ffmpeg -i "$filename" \
+               -map 0:v:0 -map 0:a -map 0:"$sub_index" \
+               -c:v copy -c:a copy -c:s srt \
+               "$output" -y < /dev/null > /dev/null 2>&1
+
+        if [ -f "$output" ] && [ $(stat -c%s "$output") -gt 10000 ]; then
+            echo -e "\e[32mSUKCES:\e[0m Utworzono $output"
+        else
+            echo -e "\e[31mBŁĄD:\e[0m Nie udało się utworzyć $output"
+            [ -f "$output" ] && rm "$output"
+            [ -n "$NOTIFY" ] && $NOTIFY "BŁĄD" "Nie udało się przetworzyć $(basename "$filename")" -u critical -i error
+        fi
+    else
+        echo -e "\e[33mPOMINIĘTO:\e[0m $filename (brak polskich napisów)"
+        # NOWY DYMEK DLA POMINIĘTYCH PLIKÓW
+        [ -n "$NOTIFY" ] && $NOTIFY "Pominięto plik" "Brak PL napisów w: $(basename "$filename")" -t 10000 -i dialog-warning
+    fi
+done
+
+# Powiadomienie o zakończeniu całego procesu
+[ -n "$NOTIFY" ] && $NOTIFY "FFmpeg Skrypt" "Zakończono przetwarzanie wszystkich plików." -i checkbox

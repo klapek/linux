@@ -1,0 +1,23 @@
+#!/bin/bash
+# If no directory is given, work in local dir
+if [ -d "$1" ] || [ -f "$1" ]; then
+  DIR="$1"
+else
+  echo "No target path given, using working directory '$(pwd)'"
+  DIR="." 
+fi
+
+# Get all the MKV files in this dir and its subdirs
+find "$DIR" -type f -name '*.mkv' | while read filename
+do
+    subs=$(mkvmerge -J "$filename" | jq -r '.tracks[] | select(.type=="subtitles") | select(.properties.language=="eng").id' | sed 'N;s/\n/,/') 
+    if [[ -n $subs ]]
+    then
+         subs="-s $subs"
+    else
+        subs=-S
+    fi
+    echo -e "Extracting tracks \e[1m\e[34m${subs#* }\e[0m from \e[1m\e[34m${filename}\e[0m..."
+    mkvmerge $subs -o "${filename%.mkv}"-ENSUB.mkv "$filename" > /dev/null 2>&1
+done
+

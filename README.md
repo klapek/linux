@@ -4,7 +4,7 @@ Moje centrum dowodzenia rozproszone na trzech maszynach. Każda ma swoją specyf
 
 ---
 
-## 💻 [Mint: ThinkPad](./mint-thinkpad/)
+## 💻 [Mint: ThinkPad](https://github.com/klapek/linux/tree/main/mint-thinkpad)
 *Daily Driver / MATE Desktop*
 - **Konfig:** .bashrc z aliasami do pracy.
 

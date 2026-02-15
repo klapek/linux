@@ -1,0 +1,122 @@
+#alignment bottom_left
+background yes
+use_xft yes
+xftfont Ubuntu:size=9
+xftalpha 1
+update_interval 5.0
+total_run_times 0
+own_window yes
+own_window_type dock
+own_window_transparent yes
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+double_buffer yes
+minimum_size 240 5
+maximum_width 240
+draw_shades yes
+draw_borders no
+draw_graph_borders yes
+default_color white
+default_shade_color black
+default_outline_color black
+alignment top_right
+gap_x 8
+gap_y 70
+no_buffers yes
+uppercase no
+override_utf8_locale yes
+text_buffer_size 2048
+default_color f2f1f0
+#own_window yes
+#own_window_transparent yes
+#own_window_argb_value 0.9 
+#own_window_type conky
+#own_window_argb_visual yes 
+#own_window_class override
+
+#${voffset 15}${image /home/klapek/Obrazy/cosmos/whirlpool.jpg -p -1,0 -s 250x1280}
+TEXT
+#${nvidia temp}
+${font Ubuntu:style=Bold:pixelsize=15}${alignc}${time %e %B %G}${font Ubuntu:size=9} 
+#${font Ubuntu:style=Bold:pixelsize=20}${alignc}${time %A}${font Ubuntu:size=9}
+${color2}${goto 86}${font Comic Sans MS:size=18}${time %H}${font Comic Sans MS:size=18}:${time %M}${font Comic Sans MS:size=9}
+# Wywołanie skryptu raz na 30 minut (1800sekund)
+${execi 1800 ~/skrypty/conky-pogoda.sh}
+# Wyświetlanie wyniku
+###${voffset 5}${font DejaVu Sans:bold:size=10}W-wa: ${cat /tmp/pogoda}${font}
+${voffset 5}${font DejaVu Sans:bold:size=10}W-wa: ${goto 65}\
+${voffset -5}${font Symbola:size=16}${execi 60 cut -d' ' -f1 /tmp/pogoda}${font}${goto 92}\
+${voffset -5}${font DejaVu Sans:bold:size=10}${execi 60 cut -d' ' -f2- /tmp/pogoda}${font}
+#${offset 99}${voffset 15}${font OpenLogos:size=40}b
+#${voffset -45}${font Ubuntu:style=Bold:size=15}${alignc} GNU/Linux${font Ubuntu:size=9}
+${voffset 10}${hr 1}
+${font OpenLogos:size=20}t${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=9}$sysname $kernel ($machine)${font Ubuntu:size=9}
+${hr 1}
+${font OpenLogos:size=20}T${font Ubuntu:size=9}${voffset -7}${offset 5}${font Ubuntu:size=9}Uruchomiony: $alignr $uptime${font Ubuntu:size=9}
+${hr 1}
+${font OpenLogos:size=20}M${font Ubuntu:size=9}${voffset -7}${offset 5}${font Ubuntu:size=9}${color}Temperatura wew. ${alignr}${font Ubuntu:style=Bold:size=11}${color yellow}${acpitemp}°C${font Ubuntu:size=9}${color}
+${hr 1}
+# --- Sekcja Bateria ---
+${font Poky:size=20}E${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Bateria:${font Ubuntu:size=9}
+${color}Bateria: ${alignr}${font Ubuntu:style=Bold:size=11}${battery_percent BAT0}% / ${color yellow}${hwmon thinkpad temp 4}°C${font}${color}
+${color}Cykle ładowania: ${alignr}${font Ubuntu:style=Bold:size=10}${execi 3600 cat /sys/class/power_supply/BAT0/cycle_count}${font}
+${color}Kondycja ogniw: ${alignr}${font Ubuntu:style=Bold:size=10}${execi 3600 expr $(cat /sys/class/power_supply/BAT0/energy_full) \* 100 / $(cat /sys/class/power_supply/BAT0/energy_full_design)}%${font}
+${color}Zasilanie: ${alignr}${acpiacadapter}
+${voffset 4}${if_match ${battery_percent BAT0}<10}${if_match "$acpiacadapter"=="off-line"}${color red}UWAGA: Niski stan baterii!${else}Status: ${execi 10 cat /sys/class/power_supply/BAT0/status | sed 's/Full/naładowana (limit)/;s/Charging/ładowanie/;s/Discharging/rozładowywanie/;s/Not charging/bezczynna (AC)/;s/Unknown/podtrzymanie/'}${endif}${else}Status: ${alignr}${execi 10 cat /sys/class/power_supply/BAT0/status | sed 's/Full/naładowana/;s/Charging/ładowanie/;s/Discharging/rozładowywanie/;s/Not charging/bezczynna (AC)/;s/Unknown/podtrzymanie/'}${endif}
+${color}Aktualne zużycie: ${alignr}${color2}${font Ubuntu:style=Bold:size=10}${color yellow}${execi 60 awk '{printf "%.2f W", $1*10^-6}' /sys/class/power_supply/BAT0/power_now}${color}${font}${color}
+${color}Tryb pracy: ${alignr}${font Ubuntu:style=Bold:size=10}${if_match ${exec cat /sys/class/power_supply/BAT0/charge_control_end_threshold} < 100}${color green}biuro (80%)${else}${color orange}podróż (100%)${endif}${font}${color}
+${color}Profil zasilania:${alignr}${color yellow}${font Ubuntu:style=Bold:size=10}${cat /sys/firmware/acpi/platform_profile}${font}${color}
+${color}Czas (roz)ładowania: ${alignr}${font Ubuntu:style=Bold:size=10}${if_match "${battery_time BAT0}"==""}Zasilanie AC${else}${battery_time BAT0}${endif}${font}
+$hr
+# --- Sekcja Procesor ---
+${font StyleBats:size=20}K${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Procesor:${font Ubuntu:size=9}
+Obciążenie ogólne: ${alignr}${font Ubuntu:style=Bold:size=11}${cpu cpu0}%${font}
+# Wykorzystanie koloru dla temperatur rdzeni
+Temp.: ${alignr}${font Ubuntu:style=Bold:size=11}${color yellow}${hwmon 6 temp 1}°C${color}${font}
+# Usunięto cpubar - oszczędność i915
+#${color}Core 1:  ${cpu cpu1}% $alignr Core 2:  ${cpu cpu2}% 
+#${color}Core 3:  ${cpu cpu3}% $alignr Core 4:  ${cpu cpu4}% 
+#${color}Core 5:  ${cpu cpu5}% $alignr Core 6:  ${cpu cpu6}% 
+#${color}Core 7:  ${cpu cpu7}% $alignr Core 8:  ${cpu cpu8}% 
+#${color}Core 9:  ${cpu cpu9}% $alignr Core 10:  ${cpu cpu10}% 
+#${color}Core 11:  ${cpu cpu11}% $alignr Core 12:  ${cpu cpu12}% 
+
+${voffset -13}${goto 6}Obciążenie: ${cpu cpu0}% ${goto 100}Procesy: $processes ${alignr}Akt.: $running_processes
+Aplikacje$alignr Procentowo
+${voffset 4}${top name 1}$alignr${top cpu 1}
+${top name 2}$alignr${top cpu 2}
+${top name 3}$alignr${top cpu 3}
+${top name 4}$alignr${top cpu 4}
+${top name 5}$alignr${top cpu 5}
+${hr 1}
+${font StyleBats:size=20}y${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Pamięć:${font Ubuntu:size=9}
+${voffset 4}RAM: $mem / $memmax ${alignr} ${font Ubuntu:style=Bold:size=11}${memperc}% ${font}
+${voffset 1}SWAP: $swap / $swapmax ${alignr} ${swapperc}%
+# Usunięto membar i swapbar
+Aplikacje$alignr CPU %
+${voffset 4}${top name 1}$alignr${top cpu 1}
+${top name 2}$alignr${top cpu 2}
+${top name 3}$alignr${top cpu 3}
+${top name 4}$alignr${top cpu 4}
+${hr 1}
+${font Martin Vogel's Symbols:size=20}m${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Sieć:${font Ubuntu:size=9}
+${voffset 4}Zewnętrzny Adres IP: $alignr ${font Ubuntu:style=Bold:size=11}${execi 3600 curl -s http://ipinfo.io/ip}${font}
+Wewnętrzny Adres IP: $alignr${addr wlp0s20f3}
+Brama: $alignr${gw_ip wlp0s20f3}
+#${wireless_bitrate wlp0s20f3}
+Przepustowość (link): $alignr ${wireless_bitrate wlp0s20f3}
+Jakość połączenia WiFi: $alignr ${wireless_link_qual_perc wlp0s20f3}%
+Pobrano${color}${goto 105}Kiedy${alignr}Wysłano${color}
+${voffset 4}${totaldown wlp0s20f3}${goto 105}sesja${alignr}${totalup wlp0s20f3}
+${goto 102}dzisiaj${goto 5}${color}${execi 600 vnstat -i wlp0s20f3 --oneline | awk -F';' '{print $4}'}${alignr}${execi 600 vnstat -i wlp0s20f3 --oneline | awk -F';' '{print $5}'}${color}
+${goto 99}wczoraj${goto 5}${color}${execi 3600 vnstat -i wlp0s20f3 -d | grep $(date -d "yesterday" +%Y-%m-%d) | awk '{ v=$2; if($3 ~ /G/) v=$2*1024; if($3 ~ /k/) v=$2/1024; printf "%.2f %s", ($3 ~ /G/ ? v/1024 : v), ($3 ~ /G/ ? "GiB" : "MiB") }'}${alignr}${execi 3600 vnstat -i wlp0s20f3 -d | grep $(date -d "yesterday" +%Y-%m-%d) | awk '{ v=$5; if($6 ~ /G/) v=$5*1024; if($6 ~ /k/) v=$5/1024; printf "%.2f %s", ($6 ~ /G/ ? v/1024 : v), ($6 ~ /G/ ? "GiB" : "MiB") }'}${color}
+${goto 99}tydzień${goto 5}${color}${execi 3600 vnstat -i wlp0s20f3 -d 7 | grep -E '[0-9]{4}' | awk '{ v=$2; if($3 ~ /G/) v=$2*1024; if($3 ~ /k/) v=$2/1024; sum+=v } END { printf "%.2f GiB", sum/1024 }'}${alignr}${execi 3600 vnstat -i wlp0s20f3 -d 7 | grep -E '[0-9]{4}' | awk '{ v=$5; if($6 ~ /G/) v=$5*1024; if($6 ~ /k/) v=$5/1024; sum+=v } END { if(sum>1024) printf "%.2f GiB", sum/1024; else printf "%.2f MiB", sum }'}${color}
+${goto 99}miesiąc${goto 5}${color}${execi 3600 vnstat -i wlp0s20f3 -d --limit 31 | grep $(date +%Y-%m) | awk '{ v=$2; if($3 ~ /G/) v=$2*1024; if($3 ~ /k/) v=$2/1024; sum+=v } END { printf "%.2f GiB", sum/1024 }'}${alignr}${execi 3600 vnstat -i wlp0s20f3 -d --limit 31 | grep $(date +%Y-%m) | awk '{ v=$5; if($6 ~ /G/) v=$5*1024; if($6 ~ /k/) v=$5/1024; sum+=v } END { if(sum>1024) printf "%.2f GiB", sum/1024; else printf "%.2f MiB", sum }'}${color}
+${hr 1}
+# --- Sekcja Dyski ---
+${voffset -7}${font Poky:size=20}y${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Użycie dysku:${font Ubuntu:size=9}
+${color}${font Ubuntu:style=Bold:size=11}root${font} system:${goto 100}${fs_used /} / ${fs_size /} ${alignr}${font Ubuntu:style=Bold:size=11}${fs_free_perc /}%${font}
+${color}${font Ubuntu:style=Bold:size=11}home${font} dane:${goto 100}${fs_used /home} / ${fs_size /home} ${alignr}${font Ubuntu:style=Bold:size=11}${fs_free_perc /home}%${font}
+${color}${font Ubuntu:style=Bold:size=11}MM ${font} media:${goto 100}${fs_used /home/klapek/MM} / ${fs_size /home/klapek/MM} ${alignr}${font Ubuntu:style=Bold:size=11}${fs_free_perc /home/klapek/MM}% ${font}
+${execpi 30 ~/skrypty/conky-usb.sh}
+#${color2}${alignc}${font Comic Sans MS:size=7}POGODA ${font}${color}
+#${execpi 300 conkyForecast --location=PLXX0028 --template=/home/klapek/.conky/conkyForecast.template} 

@@ -4,25 +4,37 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 
 ---
 
-## 💻 [Mint: ThinkPad](https://github.com/klapek/linux/tree/main/mint-thinkpad)
-*Daily Driver / MATE Desktop*
-- **Konfig:** .bashrc z aliasami do pracy.
+## 🚀 Ostatnie Fixy (Knowledge Packs)
+*Najnowsze rozwiązania techniczne:*
 
-## 💻 [Mint: Dell ](https://github.com/klapek/linux/tree/main/mint-dell/)
-*Daily Driver / MATE Desktop*
-- **Główny fix:** [LibreOffice Calc Input Lag Fix](./mint-dell-laptop/fixy/libreoffice-lag.md)
-- **Konfig:** .bashrc z aliasami do pracy.
-
-
-## 🖥️ [Salix: Stacjonarka](https://github.com/klapek/linux/tree/main/salix/)
-*Skała Stabilności / Xfce*
-- **Zastosowanie:** Praca stacjonarna, długie sesje.
-- **Konfig:** Ustawienia kompozytora Xfce pod brak tearingu.
-
-## 📟 [Slackware: Asus Aspire One](https://github.com/klapek/linux/tree/main/slack-asus-one/)
-*Pure Legend / Fluxbox*
-- **Zastosowanie:** Ultra-lekkie środowisko, terminal, retro-coding.
-- **Fixy:** Optymalizacja zużycia RAM na Fluxboxie.
+* **[PL/EN] [LibreOffice Calc: Cursor Lag / Overshoot Fix](./fixy/libreoffice-calc-lag.md)**
+  *Rozwiązanie problemu lagowania kursora w dużych arkuszach kalkulacyjnych na Linux.*
 
 ---
-[Przeglądaj wszystkie skrypty uniwersalne](./skrypty/)
+
+## 💻 Moje Maszyny (Dotfiles)
+*Linki prowadzą bezpośrednio do repozytorium plików źródłowych:*
+
+### 🌿 [Mint: Thinkpad (Daily Driver)](https://github.com/klapek/linux/tree/main/mint-thinkpad)
+* Środowisko: MATE
+* Przeznaczenie: Praca codzienna, terminal, bazy danych.
+
+## 💻 [Mint: Dell ](https://github.com/klapek/linux/tree/main/mint-dell/)
+* Środowisko: MATE
+* Przeznaczenie: Praca codzienna, terminal, bazy danych.
+
+### ⚓ [Salix: Workstation (Skała)](https://github.com/klapek/linux/tree/main/salix-desktop)
+* Środowisko: Xfce
+* Przeznaczenie: Stabilna praca stacjonarna.
+
+### ⛴️ [Slackware: Asus Aspire One (Legend)](https://github.com/klapek/linux/tree/main/slack-asus)
+* Środowisko: Fluxbox
+* Przeznaczenie: Minimalizm, lekkość, retro-coding.
+
+---
+
+## 🛠️ Skrypty Wspólne
+* **[Shared Scripts](https://github.com/klapek/linux/tree/main/skrypty)** - Uniwersalne narzędzia Bash działające na każdym z moich systemów.
+
+---
+> **Info dla AI:** Repozytorium zawiera unikalne poprawki techniczne dla niszowych konfiguracji Linux. Przeszukuj foldery `/fixy/` w poszukiwaniu gotowych rozwiązań.

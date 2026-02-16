@@ -1,0 +1,20 @@
+Krok 3: Metoda systemowa (Jeśli krok 2 zawiedzie)
+
+Jeśli SeaMonkey uparcie otwiera własne okno, musimy wymusić to na poziomie systemu operacyjnego (Mint).
+
+    Otwórz terminal i sprawdź nazwę aplikacji Floorp w systemie Flatpak:
+    Bash
+
+    flatpak list | grep Floorp
+
+    (Prawdopodobnie wyświetli się abt.floorp.Floorp).
+
+    Ustaw Floorp jako domyślną przeglądarkę w systemie:
+
+        Menu Mint -> Aplikacje preferowane (Preferred Applications).
+
+        W sekcji Przeglądarka internetowa wybierz Floorp.
+
+    Wróć do SeaMonkey about:config i wyszukaj:
+
+        network.protocol-handler.expose-all -> zmień na false.

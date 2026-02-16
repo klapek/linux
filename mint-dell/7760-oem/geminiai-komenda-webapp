@@ -1,0 +1,1 @@
+sh -c '__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia MOZ_X11_EGL=1 MOZ_DISABLE_RDD_SANDBOX=1 firefox --class WebApp-GeminiAI5568 --name WebApp-GeminiAI5568 --profile ~/.local/share/ice/firefox/GeminiAI5568 --no-remote "https://gemini.google.com"'

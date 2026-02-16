@@ -1,0 +1,15 @@
+/* 1. Pogrubienie dla wszystkich nowych/nieprzeczytanych */
+treechildren::-moz-tree-cell-text(unread),
+treechildren::-moz-tree-cell-text(new),
+treechildren::-moz-tree-cell-text(container, hasUnreadMessages-true) {
+    font-family: sans-serif !important;
+    font-weight: 900 !important;
+    text-decoration: none !important; /* Brak podkreślenia w spoczynku */
+    text-shadow: 0.4px 0 0 currentcolor !important;
+}
+
+/* 2. POWRÓT PODKREŚLENIA TYLKO POD MYSZĄ (dla orientacji) */
+treechildren::-moz-tree-cell-text(hover) {
+    text-decoration: underline !important;
+    color: #0044cc !important; /* Opcjonalnie: lekki błękit pod myszą */
+}

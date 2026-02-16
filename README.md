@@ -22,7 +22,7 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 * Środowisko: MATE
 * Przeznaczenie: Praca codzienna, terminal, bazy danych.
 
-## 💻 [Mint: Dell ](https://github.com/klapek/linux/tree/main/mint-dell/)
+### 💻 [Mint: Dell ](https://github.com/klapek/linux/tree/main/mint-dell/)
 * Środowisko: MATE
 * Przeznaczenie: Praca codzienna, terminal, bazy danych.
 

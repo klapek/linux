@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Sprawdzenie uprawnień roota
+if [[ $EUID -ne 0 ]]; then
+   echo "BŁĄD: Uruchom skrypt przez sudo: sudo $0"
+   exit 1
+fi
+
+# Tworzymy tymczasowy folder na pobrane pliki
+mkdir -p /tmp/deb_install
+cd /tmp/deb_install
+
+echo "--- 1. Pobieranie bibliotek ncurses (64-bit) ---"
+wget -N http://mirrors.kernel.org/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
+wget -N http://mirrors.kernel.org/ubuntu/pool/universe/n/ncurses/libncurses5_6.3-2ubuntu0.1_amd64.deb
+
+echo "--- 2. Instalowanie pobranych pakietów ---"
+# Używamy apt install ./plik.deb, aby automatycznie rozwiązać zależności
+apt-get update
+apt-get install -y ./libtinfo5_6.3-2ubuntu0.1_amd64.deb ./libncurses5_6.3-2ubuntu0.1_amd64.deb
+
+echo "--- 3. Naprawa ewentualnych braków ---"
+apt-get install -f -y
+
+echo "--- 4. Instalacja libqt5multimedia z systemu ---"
+apt-get install -y libqt5multimedia5
+
+echo "--- KONIEC ---"
+# Sprzątanie
+rm -rf /tmp/deb_install

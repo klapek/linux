@@ -52,6 +52,7 @@ Security -> Memory Protection -> Execution Prevention ustaw na Disabled.
 
 To wyłącza rygorystyczny test RAM, który blokuje szybki start.
 
+---
 
 ### EN: BIOS & SSD Firmware Update on Linux
 ## 1. Why update?

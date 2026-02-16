@@ -7,6 +7,9 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
+* **[PL/EN] [[Guide] ThinkPad E16 Gen 2 (2024) BIOS & SSD Firmware Update on Linux](./fixy/thinkpad-update-bios-fwupdmgr.md)**
+  *Aktualizacja ThinkPad E16 BIOS i Firmware SSD pod Linuxem.*
+
 * **[PL/EN] [LibreOffice Calc: Cursor Lag / Overshoot Fix](./fixy/libreoffice-calc-lag.md)**
   *Rozwiązanie problemu lagowania kursora w dużych arkuszach kalkulacyjnych na Linux.*
 

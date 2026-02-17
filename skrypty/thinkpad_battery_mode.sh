@@ -13,8 +13,10 @@ case $choice in
         notify-send "Bateria" "Ustawiono tryb BIURO (limit 80%)" -i battery-good
         ;;
     2)
-        echo 95 | sudo tee /sys/class/power_supply/BAT0/charge_control_start_threshold
+        # Najpierw podnosimy limit końcowy do 100
         echo 100 | sudo tee /sys/class/power_supply/BAT0/charge_control_end_threshold
+        # Dopiero teraz podnosimy próg startowy na 95
+        echo 95 | sudo tee /sys/class/power_supply/BAT0/charge_control_start_threshold
         notify-send "Bateria" "Ustawiono tryb PODRÓŻ (limit 100%)" -i battery-full
         ;;
     *)

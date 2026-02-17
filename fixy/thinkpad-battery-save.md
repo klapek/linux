@@ -11,7 +11,7 @@
 * **Wynik:** Bateria odpoczywa (**0,00W w Conky**), temperatura spada, a licznik cykli stoi w miejscu.
 
 > [!TIP]
-> Gotowy skrypt do przełączania trybów znajdziesz [tutaj](../skrypty/thinkpad_battery_mode.sh)
+> Gotowy skrypt do przełączania trybów znajdziesz [tutaj](../skrypty/thinkpad_battery_mode.sh).
 
 ---
 
@@ -26,7 +26,7 @@
 * **Result:** Battery stays idle (**0.00W in Conky**), stays cool, and cycle count doesn't increase.
 
 > [!TIP]
-> Ready-to-use switching script is available [here](../skrypty/thinkpad_battery_mode.sh)`
+> Ready-to-use switching script is available [here](../skrypty/thinkpad_battery_mode.sh).
 
 ---
 ---

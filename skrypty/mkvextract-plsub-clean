@@ -1,0 +1,25 @@
+#!/bin/bash
+
+NOTIFY=$(command -v notify-send)
+
+find . -maxdepth 1 -type f -name '*.mkv' -print0 | while read -d $'\0' -r filename
+do
+    sub_index=$(ffprobe -v error -select_streams s -show_entries stream=index:stream_tags=language -of csv=p=0 "$filename" | grep -i "pol" | head -n 1 | cut -d',' -f1)
+
+    if [[ -n "$sub_index" ]]; then
+        output="${filename%.mkv}.srt"
+        echo -e "Czyszczenie i ekstrakcja: \e[1m\e[34m$(basename "$filename")\e[0m"
+        
+        # Ekstrakcja strumienia -> czyszczenie tagów przez sed -> zapis do pliku
+        ffmpeg -i "$filename" -map 0:"$sub_index" -c:s srt -f srt -y - < /dev/null 2>/dev/null | \
+        sed -e 's/<[^>]*>//g' -e 's/{[^}]*}//g' > "$output"
+
+        if [ -s "$output" ]; then
+            echo -e "\e[32mGOTOWE (Wyczyszczone):\e[0m $output"
+        else
+            echo -e "\e[31mBŁĄD:\e[0m Plik wynikowy jest pusty!"
+        fi
+    else
+        [ -n "$NOTIFY" ] && $NOTIFY "Pominięto" "Brak PL w $(basename "$filename")" -t 2000
+    fi
+done

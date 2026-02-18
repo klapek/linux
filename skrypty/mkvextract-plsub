@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Sprawdzenie czy notify-send jest zainstalowane
+NOTIFY=$(command -v notify-send)
+
+# Powiadomienie o starcie
+[ -n "$NOTIFY" ] && $NOTIFY "Subtitle Extractor" "Rozpoczynam wyciąganie polskich napisów..." -i info
+
+# Pętla po plikach mkv w bieżącym katalogu
+find . -maxdepth 1 -type f -name '*.mkv' -print0 | while read -d $'\0' -r filename
+do
+    # 1. Znajdź indeks strumienia napisów, który ma tag "pol"
+    sub_index=$(ffprobe -v error -select_streams s -show_entries stream=index:stream_tags=language -of csv=p=0 "$filename" | grep -i "pol" | head -n 1 | cut -d',' -f1)
+
+    if [[ -n "$sub_index" ]]; then
+        # Definicja nazwy wyjściowej (podmiana .mkv na .srt)
+        output="${filename%.mkv}.srt"
+        
+        echo -e "Wyciągam napisy z: \e[1m\e[34m$(basename "$filename")\e[0m"
+        [ -n "$NOTIFY" ] && $NOTIFY "Ekstrakcja..." "$(basename "$filename")" -t 1500
+
+        # 2. Wyciąganie konkretnego strumienia do formatu SRT
+        # < /dev/null zapobiega konfliktom z pętlą read
+        ffmpeg -i "$filename" -map 0:"$sub_index" "$output" -y < /dev/null > /dev/null 2>&1
+
+        if [ -f "$output" ]; then
+            echo -e "\e[32mGOTOWE:\e[0m $output"
+        else
+            echo -e "\e[31mBŁĄD:\e[0m Coś poszło nie tak przy $(basename "$filename")"
+        fi
+    else
+        echo -e "\e[33mPOMINIĘTO:\e[0m $(basename "$filename") (brak PL napisów)"
+        [ -n "$NOTIFY" ] && $NOTIFY "Pominięto" "Brak polskich napisów w $(basename "$filename")" -t 2000 -i dialog-warning
+    fi
+done
+
+# Finałowy dymek
+[ -n "$NOTIFY" ] && $NOTIFY "Subtitle Extractor" "Zakończono pracę!" -i checkbox

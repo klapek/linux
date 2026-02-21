@@ -7,6 +7,13 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
+* [PL/EN] [Fix] Bluetooth Audio Battery Drain (PulseAudio Ghosting)  
+  Automatyczny reset audio (`pulseaudio -k`) przy wyłączaniu BT. Redukcja poboru z ~11W do **5.4W**.
+
+* **[PL/EN] [[Guide]  Bluetooth Audio Battery Drain (PulseAudio Ghosting)](./fixy/thinkpad-battery-save.md)**
+  *Automatyczny reset audio (`pulseaudio -k`) przy wyłączaniu BT. Redukcja poboru z ~11W do **5.4W*
+
+
 * **[PL/EN] [[Guide] ThinkPad Battery Management on Linux](./fixy/thinkpad-battery-save.md)**
   *Dlaczego praca na kablu (AC) z progami jest lepsza?*
 

@@ -24,13 +24,17 @@ Skrypt monitorujący obecność kontrolera Bluetooth przez `bluetoothctl`. W mom
 ---
 
 ## EN: Bluetooth Audio Power Consumption Fix
-**Issue:** After disabling Bluetooth and disconnecting headphones, power draw failed to return to baseline, staying around 10W. The PulseAudio process caused high CPU overhead (error looping/resampling) despite no active audio output.
 
-**Solution:** A background script monitoring the Bluetooth controller's presence via `bluetoothctl`. When the "absent" state is detected (controller disappears after being disabled in blueman-manager), the script forces an audio daemon reset using `pulseaudio -k`.
+### Issue:
+ After disabling Bluetooth and disconnecting headphones, power draw failed to return to baseline, staying around 10W. The PulseAudio process caused high CPU overhead (error looping/resampling) despite no active audio output.
 
-**Effect:** Power draw drops from ~11W to a stable **5.40W** during office tasks.
+### Solution:
+ A background script monitoring the Bluetooth controller's presence via `bluetoothctl`. When the "absent" state is detected (controller disappears after being disabled in blueman-manager), the script forces an audio daemon reset using `pulseaudio -k`.
 
-**Script (`~/skrypty/bt-fixer.sh`):**
+### Effect:
+Power draw drops from ~11W to a stable **5.40W** during office tasks.
+
+### [Script](../skrypty/bt-fixer.sh)
 1. Monitors state in a 3-second loop.
 2. Sends system notifications (`notify-send`).
 3. Added to MATE startup applications.

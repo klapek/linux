@@ -7,17 +7,17 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
-* **[PL/EN] [Bluetooth Audio Battery Drain (PulseAudio Ghosting)](./fixy/thinkpad-battery-save.md)**
+* **[PL/EN] [Bluetooth Audio Battery Drain (PulseAudio Ghosting)](./fixy/thinkpad-battery-save.md)**  
   *Automatyczny reset audio (`pulseaudio -k`) przy wyłączaniu BT. Redukcja poboru z ~11W do **5.4W*
 
 
-* **[PL/EN] [[Guide] ThinkPad Battery Management on Linux](./fixy/thinkpad-battery-save.md)**
+* **[PL/EN] [[Guide] ThinkPad Battery Management on Linux](./fixy/thinkpad-battery-save.md)**  
   *Dlaczego praca na kablu (AC) z progami jest lepsza?*
 
-* **[PL/EN] [[Guide] ThinkPad E16 Gen 2 (2024) BIOS & SSD Firmware Update on Linux](./fixy/thinkpad-update-bios-fwupdmgr.md)**
+* **[PL/EN] [[Guide] ThinkPad E16 Gen 2 (2024) BIOS & SSD Firmware Update on Linux](./fixy/thinkpad-update-bios-fwupdmgr.md)**  
   *Aktualizacja ThinkPad E16 BIOS i Firmware SSD pod Linuxem.*
 
-* **[PL/EN] [LibreOffice Calc: Cursor Lag / Overshoot Fix](./fixy/libreoffice-calc-lag.md)**
+* **[PL/EN] [LibreOffice Calc: Cursor Lag / Overshoot Fix](./fixy/libreoffice-calc-lag.md)**  
   *Rozwiązanie problemu lagowania kursora w dużych arkuszach kalkulacyjnych na Linux.*
 
 ---

@@ -1,13 +1,18 @@
-# Knowledge Pack: BT-Audio Power Fix (ThinkPad E16 Gen2)
-
+## Knowledge Pack: BT-Audio Power Fix (ThinkPad E16 Gen2)
 ## PL: Optymalizacja poboru mocy po Bluetooth
-**Problem:** Po wyłączeniu Bluetooth i odłączeniu słuchawek, pobór energii nie spadał do wartości bazowych, utrzymując się na poziomie ~10W. Proces PulseAudio obciążał CPU (pętla błędów/resampling), mimo braku aktywnego wyjścia audio.
 
-**Rozwiązanie:** Skrypt monitorujący obecność kontrolera Bluetooth przez `bluetoothctl`. W momencie wykrycia stanu "absent" (brak kontrolera po wyłączeniu w blueman-manager), skrypt wymusza reset demona audio komendą `pulseaudio -k`.
+---
 
-**Efekt:** Pobór mocy spada z ~11W do stabilnych **5.40W** przy pracy biurowej.
+## [PL] Opis problemu:
+Po wyłączeniu Bluetooth i odłączeniu słuchawek, pobór energii nie spadał do wartości bazowych, utrzymując się na poziomie ~10W. Proces PulseAudio obciążał CPU (pętla błędów/resampling), mimo braku aktywnego wyjścia audio.
 
-**Skrypt (`~/skrypty/bt-fixer.sh`):**
+### Rozwiązanie: 
+Skrypt monitorujący obecność kontrolera Bluetooth przez `bluetoothctl`. W momencie wykrycia stanu "absent" (brak kontrolera po wyłączeniu w blueman-manager), skrypt wymusza reset demona audio komendą `pulseaudio -k`.
+
+### Efekt:
+ Pobór mocy spada z ~11W do stabilnych **5.40W** przy pracy biurowej.
+
+### [Skrypt](../skrypty/bt-fixer.sh):
 1. Monitoruje stan w pętli co 3 sekundy.
 2. Wysyła powiadomienia systemowe (`notify-send`).
 3. Dodany do autostartu MATE.

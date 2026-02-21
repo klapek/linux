@@ -7,7 +7,7 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
-* **[PL/EN] [Bluetooth Audio Battery Drain (PulseAudio Ghosting)](./fixy/thinkpad-battery-save.md)**  
+* **[PL/EN] [Bluetooth Audio Battery Drain (PulseAudio Ghosting)](./fixy/thinpad-bt-pulseaudio-fix.md)**  
   *Automatyczny reset audio (`pulseaudio -k`) przy wyłączaniu BT. Redukcja poboru z ~11W do **5.4W*
 
 

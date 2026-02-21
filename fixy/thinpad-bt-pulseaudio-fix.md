@@ -34,7 +34,7 @@ Skrypt monitorujący obecność kontrolera Bluetooth przez `bluetoothctl`. W mom
 ### Effect:
 Power draw drops from ~11W to a stable **5.40W** during office tasks.
 
-### [Script](../skrypty/bt-fixer.sh)
+### [Script](../skrypty/bt-fixer.sh):
 1. Monitors state in a 3-second loop.
 2. Sends system notifications (`notify-send`).
 3. Added to MATE startup applications.

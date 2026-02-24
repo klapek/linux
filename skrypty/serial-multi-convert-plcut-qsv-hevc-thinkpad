@@ -1,0 +1,61 @@
+#!/bin/bash
+# ThinkPad E16 G2 - Video Surgeon (Samsung-Ready)
+# Max Speed + Language Priority + Human Readable Time
+
+QUALITY="25"
+
+for input in "$@"; do
+    file=$(echo "$input" | sed 's|^file://||')
+    [ ! -f "$file" ] && continue
+    
+    output="${file%.*}-Chirurg.mkv"
+    start_time=$(date +%s)
+
+    notify-send -i "dialog-ok" "ThinkPad Surgeon" "Start: $(basename "$file")"
+
+    # --- KONFIGURACJA LINII FFMPEG ---
+
+    # OPCJA 1: CHIRURG (Tylko PL/Pierwsze audio, brak napisów, x40 speed)
+    ffmpeg -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -extra_hw_frames 64 -hwaccel_output_format vaapi \
+        -i "$file" \
+        -vf "scale_vaapi=1280:-2" \
+        -c:v hevc_vaapi -qp "$QUALITY" \
+        -map 0:v:0 \
+        -map 0:a:m:language:pol? -map 0:a:0? -disposition:a:0 default \
+        -c:a copy -sn \
+        -max_muxing_queue_size 1024 -y "$output"
+
+    # OPCJA 2: WYCISKARKA (Pod rarytasy typu Vorbis/DTS - zakomentowana)
+    # ffmpeg -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -extra_hw_frames 64 -hwaccel_output_format vaapi \
+    #    -i "$file" \
+    #    -vf "scale_vaapi=1280:-2" \
+    #    -c:v hevc_vaapi -qp "$QUALITY" \
+    #    -map 0:v:0 \
+    #    -map 0:a:m:language:pol? -map 0:a:0? -disposition:a:0 default \
+    #    -c:a aac -ac 2 -b:a 128k -sn \
+    #    -max_muxing_queue_size 1024 -y "$output"
+
+    if [ $? -eq 0 ]; then
+        end_time=$(date +%s)
+        duration=$(( end_time - start_time ))
+        
+        # Przeliczanie na minuty i sekundy
+        MIN=$(( duration / 60 ))
+        SEC=$(( duration % 60 ))
+        
+        if [ $MIN -eq 0 ]; then
+            TIME_DISPLAY="${SEC}s"
+        else
+            TIME_DISPLAY="${MIN}m ${SEC}s"
+        fi
+
+        notify-send -i "dialog-ok" "Chirurg Gotowy!" "Czas: $TIME_DISPLAY\nRozmiar: $(du -h "$output" | cut -f1)"
+        echo -e "\n\e[32m[SUKCES]\e[0m Proces zakończony w $TIME_DISPLAY."
+    else
+        notify-send -u critical -i "dialog-error" "Błąd Chirurga" "Sprawdź błędy w terminalu!"
+        echo -e "\n\e[31m[BŁĄD]\e[0m Coś poszło nie tak."
+    fi
+done
+
+echo -e "\nNaciśnij [ENTER], aby zamknąć to okno..."
+read

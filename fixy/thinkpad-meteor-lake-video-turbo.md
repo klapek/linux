@@ -44,6 +44,7 @@ sudo apt update && sudo apt install intel-media-va-driver-non-free
 
 sudo apt install intel-gpu-tools
 ```
+
 # Uruchomienie podglądu w nowym terminalu / Run monitor in new terminal:
 ```bash
 sudo intel_gpu_top

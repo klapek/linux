@@ -30,7 +30,7 @@ sudo usermod -aG video,render $USER
 ```bash
 sudo apt update && sudo apt install intel-media-va-driver-non-free
 ```
-<mark>**[!] RESTART SYSTEMU / SYSTEM RESTART REQUIRED!**<mark> 
+<mark>**[!] RESTART SYSTEMU / SYSTEM RESTART REQUIRED!**</mark> 
 
 ---
 

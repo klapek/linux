@@ -11,7 +11,7 @@ for input in "$@"; do
     start_time=$(date +%s)
 
     # Informacja startowa w dymku
-    notify-send -i dialog-information -t 3000 "FFmpeg" "Start: $(basename "$file")" 
+    notify-send -t 3000 "FFmpeg" "Start: $(basename "$file")" -i dialog-ok
 
     # Uruchomienie ffmpeg z paskiem postępu Zenity
     # Używamy --pulsate, bo ffmpeg nie podaje procentów w prosty sposób
@@ -28,7 +28,7 @@ for input in "$@"; do
 
     # Sprawdzenie czy użytkownik nie zamknął okienka (Anuluj)
     if [ "$?" -eq 1 ]; then
-        notify-send -u critical -i dialog-error "Przerwano" "Konwersja została anulowana przez użytkownika."
+        notify-send -u critical "Przerwano" "Konwersja została anulowana przez użytkownika."
         exit 1
     fi
 
@@ -44,8 +44,8 @@ for input in "$@"; do
 
     # Podsumowanie
     if [ -f "$output" ]; then
-        notify-send -i dialog-ok "Sukces!" "Plik gotowy.\nCzas: $TIME_MSG\nLokalizacja: $(basename "$output")"
+        notify-send "Sukces!" "Plik gotowy.\nCzas: $TIME_MSG\nLokalizacja: $(basename "$output")" -i dialog-ok
     else
-        notify-send -u critical -i dialog-error "Błąd" "Coś poszło nie tak z plikiem $(basename "$file")" 
+        notify-send -u critical "Błąd" "Coś poszło nie tak z plikiem $(basename "$file")" -i dialog-error
     fi
 done

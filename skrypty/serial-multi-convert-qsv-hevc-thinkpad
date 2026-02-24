@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Ustawienia Turbo (QuickSync)
+QUALITY=25 # Odpowiednik CRF, im wyżej tym mniejszy plik
+PRESET="slower" # Hardware'owy preset dla QSV
+MAX_WIDTH=1280
+
+for input in "$@"; do
+    file=$(echo "$input" | sed 's|^file://||')
+    output="${file%.*}.HEVC_QSV.mkv"
+    start_time=$(date +%s)
+
+    # Start - ikona info
+    notify-send -i "dialog-information" "Intel QuickSync" "Turbo Start: $(basename "$file")"
+
+    # FFmpeg z akceleracją sprzętową QSV:
+    # -hwaccel qsv: włącza sprzętowe dekodowanie
+    # -c:v hevc_qsv: włącza sprzętowe kodowanie x265
+    (
+        ffmpeg -hwaccel qsv -i "$file" \
+            -vf "vpp_qsv=w='min($MAX_WIDTH,iw)':h=-2,hqdn3d" \
+            -c:v hevc_qsv -global_quality $QUALITY -preset $PRESET \
+            -map 0:v:0 -map 0:a:m:language:pol? -map 0:a:0? -disposition:a:0 default \
+            -c:a aac -b:a 128k \
+            -sn -y "$output" 2>&1
+    ) | zenity --progress --title="Turbo Konwersja (QSV)" \
+               --text="Przetwarzam sprzętowo: $(basename "$file")" \
+               --pulsate --auto-close --width=400
+
+    if [ "$?" -eq 1 ]; then
+        notify-send -u critical -i "dialog-error" "Przerwano" "Turbo konwersja anulowana."
+        exit 1
+    fi
+
+    end_time=$(date +%s)
+    duration=$(( end_time - start_time ))
+    TIME_MSG="$(( duration / 60 )) min. $(( duration % 60 )) sek."
+
+    # Sukces - tutaj ikona dialog-ok, która u Ciebie działa!
+    notify-send -i "dialog-ok" "Sukces Turbo!" "Plik gotowy w $TIME_MSG\nRozmiar: $(du -h "$output" | cut -f1)"
+done

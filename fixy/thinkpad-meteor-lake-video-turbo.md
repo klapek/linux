@@ -39,7 +39,7 @@ sudo apt update && sudo apt install intel-media-va-driver-non-free
 
 [PL] Jeśli chcesz widzieć, jak Twój Meteor Lake "poci się" przy pracy (Video 80%+), zainstaluj narzędzia Intela:
 
-[EN] To see your Meteor Lake working hard (Video 80%+), install the Intel tools:
+[EN] To see your Meteor Lake working hard (Video 80%+), install the Intel tools:  
 ```bash
 
 sudo apt install intel-gpu-tools

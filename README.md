@@ -7,6 +7,9 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
+* **[PL/EN] [ThinkPad Meteor Lake Video Turbo](fixy/thinkpad-meteor-lake-video-turbo.md)**  
+ *Ekstremalnie szybka konwersja HEVC (x40 speed) z wykorzystaniem VA-API. Skrypty D-Turbo i Chirurg (PL audio priority) z poprawkami stabilności bufora GPU.*
+
 * **[PL/EN] [Bluetooth Audio Battery Drain (PulseAudio Ghosting)](./fixy/thinpad-bt-pulseaudio-fix.md)**  
   *Automatyczny reset audio (`pulseaudio -k`) przy wyłączaniu BT. Redukcja poboru z ~11W do **5.4W*
 

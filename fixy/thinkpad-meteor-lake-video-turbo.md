@@ -27,9 +27,12 @@ sudo usermod -aG video,render $USER
 ```
 
 # Instalacja sterowników / Driver installation
+```bash
 sudo apt update && sudo apt install intel-media-va-driver-non-free
+```
+[!] RESTART SYSTEMU / SYSTEM RESTART REQUIRED! 
 
-[!] RESTART SYSTEMU / SYSTEM RESTART REQUIRED! ---
+---
 
 ## 2. Podgląd pracy GPU / Monitor GPU (intel-gpu-tools)
 

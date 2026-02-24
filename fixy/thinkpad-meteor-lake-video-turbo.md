@@ -26,7 +26,7 @@ A set of scripts optimized for **Intel Meteor Lake** architecture, utilizing the
 sudo usermod -aG video,render $USER
 ```
 
-# Instalacja sterowników / Driver installation
+**Instalacja sterowników / Driver installation**
 ```bash
 sudo apt update && sudo apt install intel-media-va-driver-non-free
 ```

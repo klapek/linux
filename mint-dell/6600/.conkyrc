@@ -1,0 +1,111 @@
+alignment bottom_left
+background yes
+use_xft yes
+xftfont Ubuntu:size=9
+xftalpha 0.5
+update_interval 1.0
+total_run_times 0
+own_window yes
+own_window_type dock
+own_window_transparent yes
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+double_buffer yes
+minimum_size 240 5
+maximum_width 240
+draw_shades yes
+draw_borders no
+draw_graph_borders yes
+default_color white
+default_shade_color black
+default_outline_color black
+alignment top_right
+gap_x 8
+gap_y 70
+no_buffers yes
+uppercase no
+override_utf8_locale yes
+text_buffer_size 2048
+default_color f2f1f0
+#own_window yes
+#own_window_transparent yes 
+#own_window_type conky
+#own_window_argb_visual yes 
+#own_window_class override
+
+#${voffset 15}${image /home/klapek/Obrazy/cosmos/whirlpool.jpg -p -1,0 -s 250x1280}
+TEXT
+#${nvidia temp}
+${font Ubuntu:style=Bold:pixelsize=15}${alignc}${time %e %B %G}${font Ubuntu:size=9} 
+#${font Ubuntu:style=Bold:pixelsize=20}${alignc}${time %A}${font Ubuntu:size=9}
+${color2}${goto 86}${font Comic Sans MS:size=18}${time %H}${font Comic Sans MS:size=18}:${time %M}${font Comic Sans MS:size=9}${voffset -8}${time %S}
+#${offset 99}${voffset 15}${font OpenLogos:size=40}b
+#${voffset -45}${font Ubuntu:style=Bold:size=15}${alignc} GNU/Linux${font Ubuntu:size=9}
+${voffset 15}${hr 1}
+${font OpenLogos:size=20}t${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=9}$sysname $kernel ($machine)${font Ubuntu:size=9}
+${hr 1}
+${font OpenLogos:size=20}T${font Ubuntu:size=9}${voffset -7}${offset 5}${font Ubuntu:size=9}Uruchomiony: $alignr $uptime${font Ubuntu:size=9}
+${hr 1}
+${font Poky:size=20}E${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Bateria:${font Ubuntu:size=9}
+${color}Bateria: ${alignr}${battery_percent BAT0}% / ${acpitemp}°C
+#${color #4c4c4c} ${battery_bar BAT0 14,40}${color}
+${voffset 4}${color}Zasilanie: ${color}${acpiacadapter} 
+#${color #4c4c4c}${battery_bar BAT0}${color}
+${voffset 4}${if_match ${battery_percent}<10}${if_match "$acpiacadapter"=="off-line"}${color red}Status: ${battery} ${battery_bar}${exec beep}
+${else}Status: ${color} ${battery} ${battery_bar}
+${endif}${else}Status: ${color} ${battery} ${color #4c4c4c}${battery_bar BAT0}${color}
+${endif}Czas (roz)ładowania: $color ${battery_time} 
+$hr
+${font StyleBats:size=20}K${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Procesor:${font Ubuntu:size=9}
+${voffset 4}Intel i7 2720QM 2.2 GHz (${freq} MHz)
+${color}Core 1: ${execi 8 sensors | grep -A 0 'Core 0' | cut -c15-25 | sed '/^$/d'} $alignr ${color}Core 2: ${execi 8 sensors | grep -A 0 'Core 1' | cut -c15-25 | sed '/^$/d'}
+${color}Core 3: ${execi 8 sensors | grep -A 0 'Core 2' | cut -c15-25 | sed '/^$/d'} $alignr ${color}Core 4: ${execi 8 sensors | grep -A 0 'Core 3' | cut -c15-25 | sed '/^$/d'}
+${color #8c8c8c}${cpubar 12}${color}
+${voffset -13}${goto 6}${alignc} ${cpu cpu0 cpu1 cpu2 cpu3}%
+${color}Core 1:  ${cpu cpu1}% $alignr Core 2:  ${cpu cpu2}% 
+${color}Core 3:  ${cpu cpu3}% $alignr Core 4:  ${cpu cpu4}% 
+
+${voffset -13}${goto 6}Obciążenie: ${cpu cpu0 cpu1 cpu2 cpu3}% ${goto 100}Procesy: $processes ${alignr}Akt.: $running_processes
+Aplikacje$alignr Procentowo
+${voffset 4}${top name 1}$alignr${top cpu 1}
+${top name 2}$alignr${top cpu 2}
+${top name 3}$alignr${top cpu 3}
+${hr 1}
+${font StyleBats:size=20}y${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Pamięć:${font Ubuntu:size=9}
+${voffset 4}Użycie pamięci:
+${color #4c4c4c}${membar 12}${color}
+${voffset -13}${goto 6}RAM${goto 77}$mem / $memmax ${goto 222}$memperc%
+${voffset +1}${color #4c4c4c}${swapbar 12}${color}
+${voffset -13}${goto 6}SWAP${goto 77}$swap / $swapmax ${goto 222}$swapperc%
+Aplikacje${goto 100}Procentowo$alignr w MiB
+${voffset 4}${top_mem name 1}${goto 120}${top_mem mem 1}$alignr${top mem_res 1}
+${top_mem name 2}${goto 120}${top_mem mem 2}$alignr${top mem_res 2}
+${top_mem name 3}${goto 120}${top_mem mem 3}$alignr${top mem_res 3}
+${hr 1}
+${font Martin Vogel's Symbols:size=20}m${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Sieć:${font Ubuntu:size=9}
+${voffset 4}Zewnętrzny Adres IP: $alignr ${execi 3600 wget http://ipinfo.io/ip -qO - | tail}
+Wewnętrzny Adres IP: $alignr${addr wlp3s0}
+Brama: $alignr${gw_ip wlp3s0}
+#${wireless_bitrate wlp3s0}
+Przepustowość: $alignr ${execi 10 iw dev wlp3s0 link | grep rate | awk '{print $3}'} Mbit/s
+${color #4c4c4c}${wireless_link_bar 12 wlp3s0}${color}
+${voffset -13}${goto 6}Siła sygnału WiFi
+${voffset 1}${color #4c4c4c}${downspeedgraph wlp3s0 12, 125}${goto 137}${upspeedgraph wlp3s0 12, 105}${color}
+${voffset -13}${goto 6}Pob.${goto 45}${downspeed wlp3s0} kb/s ${goto 141}Wys.${goto 170}${upspeed wlp3s0} kb/s
+${voffset -13}
+Pobrano${color}${goto 105}Kiedy${alignr}Wysłano${color}
+${voffset 4}${totaldown wlp3s0}${goto 105}sesja${alignr}${totalup wlp3s0}
+${goto 102}dzisiaj${goto 5}${color}${execi 60 vnstat -i wlp3s0+eno1 | grep "today" | awk '{print $2 $3}'}${alignr}${execi 60 vnstat -i wlp3s0+eno1 | grep "today" | awk '{print $5 $6}'}${color}
+${goto 99}wczoraj${goto 5}${color}${execi 600 vnstat -i wlp3s0+eno1 | grep "yesterday" | awk '{print $2 $3}'}${alignr}${execi 60 vnstat -i wlp3s0+eno1 | grep "yesterday" | awk '{print $5 $6}'}${color}
+${goto 99}tydzień${goto 5}${color}${execi 600 vnstat -i wlp3s0+eno1 -w | grep "days" | awk '{print $4 $5}'}${alignr}${execi 60 vnstat -i wlp3s0+eno1 -w | grep "days" | awk '{print $7 $8}'}${color}
+${goto 99}miesiąc${goto 5}${color}${execi 600 vnstat -i wlp3s0+eno1 -m | grep "`date +"'%y"`" | tail -1 | awk '{print $3 $4}'}${alignr}${execi 60 vnstat -i wlp3s0+eno1 -m | grep "`date +"'%y"`" | tail -1 | awk '{print $6 $7}'}${color}
+${hr 1}
+${voffset -7}${font Poky:size=20}y${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Użycie dysku:${font Ubuntu:size=9}
+${voffset 4}${color #4c4c4c}${fs_bar 12 /}
+${voffset -13}${goto 6}${color}root  ${fs_used /} / ${fs_size /}${goto 175}Wolne: ${fs_free_perc /}%
+${voffset 4}${color #4c4c4c}${fs_bar 12 /home}
+${voffset -13}${goto 6}${color}home  ${fs_used /home} / ${fs_size /home}${goto 175}Wolne: ${fs_free_perc /home}%
+${voffset 4}${color #4c4c4c}${fs_bar 12 /mnt/MM}
+${voffset -13}${goto 6}${color}MM  ${fs_used /mnt/MM} / ${fs_size /mnt/MM}${goto 175}Wolne: ${fs_free_perc /mnt/MM}%
+${color}${execpi 3 ~/usb.py}
+#${color2}${alignc}${font Comic Sans MS:size=7}POGODA ${font}${color}
+#${execpi 300 conkyForecast --location=PLXX0028 --template=/home/klapek/.conky/conkyForecast.template} 

@@ -8,7 +8,7 @@ for input in "$@"; do
     file=$(echo "$input" | sed 's|^file://||')
     [ ! -f "$file" ] && continue
     
-    output="${file%.*}-Turbo.mkv"
+    output="${file%.*}-UNIhybrid.mkv"
     start_time=$(date +%s)
 
     notify-send -i "dialog-ok" "ThinkPad D-Turbo" "Start: $(basename "$file")"

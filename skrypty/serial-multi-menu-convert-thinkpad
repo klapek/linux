@@ -1,83 +1,75 @@
 #!/bin/bash
 
-# --- MENU WYBORU ---
+# --- THINKPAD E16 G2: METEOR LAKE ULTIMATE SUITE ---
+# Zoptymalizowany pod: Intel Arc, pliki 1080i oraz duże WEB-DL
+
 clear
-echo -e "\e[33m--- THINKPAD E16 G2: VIDEO CONVERTER SUITE ---\e[0m"
-echo "1) Turbo (Pewniaki, x40, 1x Audio)"
-echo "2) Turbo-Hybryda (Trudne pliki/Handbrake, CPU+GPU)"
-echo "3) PL-Chirurg (Wiele ścieżek -> Wycinanie PL Audio)"
-echo "----------------------------------------------"
+echo -e "\e[33m--- THINKPAD E16 G2: KONWERTER HEVC VA-API ---\e[0m"
+echo "1) Turbo (Full Speed, x30-x40, 1x Audio) - dla WEB-DL/Handbrake"
+echo "2) Hybryda (Stabilna, CPU Decode) - dla 1080i, 50fps i błędnych plików"
+echo "3) PL-Chirurg (Tylko PL Audio, Zero Napisów) - x30+"
 read -p "Wybierz tryb (1-3): " MODE
 
-# --- JAKOŚĆ ---
-echo -n "Podaj jakość QP (18-30) [Standard: 25, Wysoka: 20]: "
-read USER_QP
+read -p "Podaj jakość QP (18-30) [Standard: 25, Wysoka: 20]: " USER_QP
 QUALITY=${USER_QP:-25}
 
-# --- KONFIGURACJA TRYBÓW ---
-case $MODE in
-    1)
-        NAME="D-Turbo"
-        FF_ARGS="-hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -extra_hw_frames 64 -hwaccel_output_format vaapi"
-        FILTERS="scale_vaapi=1280:-2"
-        MAPPING="-map 0:v:0 -map 0:a:0"
-        ;;
-    2)
-        NAME="Hybryda"
-        FF_ARGS="-init_hw_device vaapi=intel:/dev/dri/renderD128 -filter_hw_device intel"
-        FILTERS="format=nv12,hwupload,scale_vaapi=1280:-2"
-        MAPPING="-map 0:v:0 -map 0:a:0"
-        ;;
-    3)
-        NAME="Chirurg"
-        FF_ARGS="-hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -extra_hw_frames 64 -hwaccel_output_format vaapi"
-        FILTERS="scale_vaapi=1280:-2"
-        MAPPING="-map 0:v:0 -map 0:a:m:language:pol? -map 0:a:0?"
-        ;;
-    *)
-        echo "Nieprawidłowy wybór!"
-        exit 1
-        ;;
-esac
-
-# --- PĘTLA PRZETWARZANIA ---
 mkdir -p convert
-# Jeśli skrypt widzi zaznaczone pliki z Caja, bierze je. Jeśli nie, bierze wszystko z folderu.
-FILES=${CAJA_SCRIPT_SELECTED_FILE_PATHS:-*.mp4 *.mkv *.avi}
 
-for file in $FILES; do
+for file in "${@:-*.[Mm][Kk][Vv]}"; do
     [ -e "$file" ] || continue
-    output="convert/${file%.*}-HEVC.mkv"
+    filename=$(basename "$file")
+    output="convert/${filename%.*}.x265.HEVC-AiP.mkv"
     start_time=$(date +%s)
-    
-    echo -e "\n\e[33m[START] $NAME | QP: $QUALITY | Plik: $file\e[0m"
-    
-    # GŁÓWNA KOMENDA FFMPEG
-    ffmpeg $FF_ARGS -i "$file" -vf "$FILTERS" -c:v hevc_vaapi -qp "$QUALITY" \
-           $MAPPING -c:a copy -sn -max_muxing_queue_size 2048 -y "$output"
+    echo -e "\n\e[33m[START] Przetwarzam: $filename\e[0m"
 
-    # --- LOGIKA PO ZAKOŃCZENIU (SUCCESS / ERROR) ---
-    if [ $? -eq 0 ]; then
+    # KOMENDA FFMPEG
+    if [ "$MODE" == "1" ]; then
+        # TURBO
+        ffmpeg -init_hw_device vaapi=intel:/dev/dri/renderD128,extra_hw_frames=128 -hwaccel vaapi -hwaccel_output_format vaapi \
+        -i "$file" -vf "scale_vaapi=1280:-2" -c:v hevc_vaapi -qp "$QUALITY" -async_depth 2 \
+        -map 0:v:0 -map 0:a:0 -c:a copy -sn -max_muxing_queue_size 8192 -y "$output"
+    
+    elif [ "$MODE" == "2" ]; then
+        # HYBRYDA (CPU DECODE) - FIX DLA 50FPS I USZKODZONYCH KLATEK
+        ffmpeg -init_hw_device vaapi=intel:/dev/dri/renderD128 -filter_hw_device intel \
+        -i "$file" \
+        -vf "format=nv12,hwupload,scale_vaapi=1280:-2" \
+        -c:v hevc_vaapi -qp "$QUALITY" -async_depth 1 \
+        -map 0:v:0 -map 0:a:m:language:pol? -map 0:a:0? \
+        -c:a copy -sn -max_muxing_queue_size 8192 -y "$output"
+
+    elif [ "$MODE" == "3" ]; then
+        # CHIRURG - TYLKO PL (Bezwzględny)
+        ffmpeg -init_hw_device vaapi=intel:/dev/dri/renderD128,extra_hw_frames=128 -hwaccel vaapi -hwaccel_output_format vaapi \
+        -i "$file" -vf "scale_vaapi=1280:-2" -c:v hevc_vaapi -qp "$QUALITY" -async_depth 2 \
+        -map 0:v:0 \
+        -map 0:a:m:language:pol \
+        -c:a copy -sn -max_muxing_queue_size 8192 -y "$output"
+    fi
+
+    STATUS=$?
+    
+    # --- LOGIKA RATOWANIA I LOGOWANIA (Safe-Muxer 100MB) ---
+    if [ -f "$output" ] && [ $(stat -c%s "$output") -gt 100000000 ]; then
         duration=$(( $(date +%s) - start_time ))
-        MIN=$(( duration / 60 ))
-        SEC=$(( duration % 60 ))
-        [ $MIN -eq 0 ] && TIME_DISPLAY="${SEC}s" || TIME_DISPLAY="${MIN}m ${SEC}s"
-
-        # Powiadomienie MATE (dialog-ok wyświetla ptaszka V)
-        notify-send -i "dialog-ok" "$NAME: Gotowe!" "Czas: $TIME_DISPLAY\nRozmiar: $(du -h "$output" | cut -f1)\nPlik: $(basename "$output")"
-        echo -e "\n\e[32m[SUKCES]\e[0m Proces zakończony w $TIME_DISPLAY."
+        MIN=$(( duration / 60 )); SEC=$(( duration % 60 ))
+        
+        if [ $STATUS -eq 0 ]; then
+             echo -e "\e[32m[SUKCES]\e[0m Zakończono w ${MIN}m ${SEC}s. V"
+             echo "$(date '+%Y-%m-%d %H:%M:%S') - OK - $filename (${MIN}m ${SEC}s)" >> konwersja_sesja.log
+             notify-send -i "dialog-ok" "Gotowe! V" "$filename"
+        else
+             # To jest przypadek plików k83 / Meteor Lake crash na końcu (99%)
+             echo -e "\e[33m[UWAGA]\e[0m FFmpeg zgłosił błąd (99%), ale plik URATOWANY. V"
+             echo "$(date '+%Y-%m-%d %H:%M:%S') - URATOWANY (Błąd 99%) - $filename" >> konwersja_sesja.log
+             notify-send -u critical -i "dialog-warning" "Uratowano plik V" "$filename"
+        fi
     else
-        # CZYSZCZENIE I LOGOWANIE BŁĘDÓW
+        # Plik nie istnieje lub jest za mały (prawdziwy błąd)
         [ -f "$output" ] && rm -f "$output"
-        
-        echo "$(date '+%Y-%m-%d %H:%M:%S') - MODE: $NAME - BŁĄD: $(basename "$file")" >> konwersja_bledy.log
-        
-        # Powiadomienie MATE o błędzie
-        notify-send -u critical -i "dialog-error" "BŁĄD $NAME" "Plik usunięty! Sprawdź konwersja_bledy.log\n$(basename "$file")"
-        echo -e "\n\e[31m[BŁĄD]\e[0m Coś poszło nie tak. Usunięto: $(basename "$output")"
+        echo -e "\e[31m[BŁĄD]\e[0m Konwersja padła za wcześnie - plik usunięty."
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - FATAL ERROR (Plik usunięty) - $filename" >> konwersja_sesja.log
     fi
 done
-
-echo -e "\n\e[34m--- WSZYSTKIE PLIKI PRZETWORZONE ---\e[0m"
-echo -e "Naciśnij [ENTER], aby zamknąć..."
-read
+echo -e "\n\e[33m--- PRACA ZAKOŃCZONA ---\e[0m"
+read -p "Naciśnij [ENTER]..."

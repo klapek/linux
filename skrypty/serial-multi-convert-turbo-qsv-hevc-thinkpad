@@ -50,8 +50,10 @@ for input in "$@"; do
         notify-send -i "dialog-ok" "D-Turbo Gotowe!" "Czas: $TIME_DISPLAY\nRozmiar: $(du -h "$output" | cut -f1)"
         echo -e "\n\e[32m[SUKCES]\e[0m Proces zakończony w $TIME_DISPLAY."
     else
-        notify-send -u critical -i "dialog-error" "Błąd D-Turbo" "Sprawdź błędy w terminalu!"
-        echo -e "\n\e[31m[BŁĄD]\e[0m Coś poszło nie tak."
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - BŁĄD: $(basename "$file")" >> turbo-errors.log
+        
+        notify-send -u critical -i "dialog-error" "Błąd D-Turbo" "Sprawdź plik turbo-errors.log!"
+        echo -e "\n\e[31m[BŁĄD]\e[0m Coś poszło nie tak z plikiem: $(basename "$file")"
     fi
 done
 

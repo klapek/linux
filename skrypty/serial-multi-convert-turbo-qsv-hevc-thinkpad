@@ -50,10 +50,14 @@ for input in "$@"; do
         notify-send -i "dialog-ok" "D-Turbo Gotowe!" "Czas: $TIME_DISPLAY\nRozmiar: $(du -h "$output" | cut -f1)"
         echo -e "\n\e[32m[SUKCES]\e[0m Proces zakończony w $TIME_DISPLAY."
     else
-        echo "$(date '+%Y-%m-%d %H:%M:%S') - BŁĄD: $(basename "$file")" >> turbo-errors.log
+        # --- CZYSZCZENIE I LOGOWANIE ---
+        [ -f "$output" ] && rm -f "$output"  # USUWA USZKODZONY PLIK, JEŚLI ISTNIEJE
         
-        notify-send -u critical -i "dialog-error" "Błąd D-Turbo" "Sprawdź plik turbo-errors.log!"
-        echo -e "\n\e[31m[BŁĄD]\e[0m Coś poszło nie tak z plikiem: $(basename "$file")"
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - BŁĄD (USUNIĘTO): $(basename "$file")" >> bledy_turbo.log
+        
+        notify-send -u critical -i "dialog-error" "Błąd D-Turbo" "Plik usunięty! Sprawdź bledy_turbo.log"
+        echo -e "\n\e[31m[BŁĄD]\e[0m Konwersja nieudana. Usunięto uszkodzony plik: $(basename "$output")"
+        # ------------------------------
     fi
 done
 

@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# --- MENU WYBORU ---
+clear
+echo -e "\e[33m--- THINKPAD E16 G2: VIDEO CONVERTER SUITE ---\e[0m"
+echo "1) Turbo (Pewniaki, x40, 1x Audio)"
+echo "2) Turbo-Hybryda (Trudne pliki/Handbrake, CPU+GPU)"
+echo "3) PL-Chirurg (Wiele ścieżek -> Wycinanie PL Audio)"
+echo "----------------------------------------------"
+read -p "Wybierz tryb (1-3): " MODE
+
+# --- JAKOŚĆ ---
+echo -n "Podaj jakość QP (18-30) [Standard: 25, Wysoka: 20]: "
+read USER_QP
+QUALITY=${USER_QP:-25}
+
+# --- KONFIGURACJA TRYBÓW ---
+case $MODE in
+    1)
+        NAME="D-Turbo"
+        FF_ARGS="-hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -extra_hw_frames 64 -hwaccel_output_format vaapi"
+        FILTERS="scale_vaapi=1280:-2"
+        MAPPING="-map 0:v:0 -map 0:a:0"
+        ;;
+    2)
+        NAME="Hybryda"
+        FF_ARGS="-init_hw_device vaapi=intel:/dev/dri/renderD128 -filter_hw_device intel"
+        FILTERS="format=nv12,hwupload,scale_vaapi=1280:-2"
+        MAPPING="-map 0:v:0 -map 0:a:0"
+        ;;
+    3)
+        NAME="Chirurg"
+        FF_ARGS="-hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -extra_hw_frames 64 -hwaccel_output_format vaapi"
+        FILTERS="scale_vaapi=1280:-2"
+        MAPPING="-map 0:v:0 -map 0:a:m:language:pol? -map 0:a:0?"
+        ;;
+    *)
+        echo "Nieprawidłowy wybór!"
+        exit 1
+        ;;
+esac
+
+# --- PĘTLA PRZETWARZANIA ---
+mkdir -p convert
+# Jeśli skrypt widzi zaznaczone pliki z Caja, bierze je. Jeśli nie, bierze wszystko z folderu.
+FILES=${CAJA_SCRIPT_SELECTED_FILE_PATHS:-*.mp4 *.mkv *.avi}
+
+for file in $FILES; do
+    [ -e "$file" ] || continue
+    output="convert/${file%.*}-HEVC.mkv"
+    start_time=$(date +%s)
+    
+    echo -e "\n\e[33m[START] $NAME | QP: $QUALITY | Plik: $file\e[0m"
+    
+    # GŁÓWNA KOMENDA FFMPEG
+    ffmpeg $FF_ARGS -i "$file" -vf "$FILTERS" -c:v hevc_vaapi -qp "$QUALITY" \
+           $MAPPING -c:a copy -sn -max_muxing_queue_size 2048 -y "$output"
+
+    # --- LOGIKA PO ZAKOŃCZENIU (SUCCESS / ERROR) ---
+    if [ $? -eq 0 ]; then
+        duration=$(( $(date +%s) - start_time ))
+        MIN=$(( duration / 60 ))
+        SEC=$(( duration % 60 ))
+        [ $MIN -eq 0 ] && TIME_DISPLAY="${SEC}s" || TIME_DISPLAY="${MIN}m ${SEC}s"
+
+        # Powiadomienie MATE (dialog-ok wyświetla ptaszka V)
+        notify-send -i "dialog-ok" "$NAME: Gotowe!" "Czas: $TIME_DISPLAY\nRozmiar: $(du -h "$output" | cut -f1)\nPlik: $(basename "$output")"
+        echo -e "\n\e[32m[SUKCES]\e[0m Proces zakończony w $TIME_DISPLAY."
+    else
+        # CZYSZCZENIE I LOGOWANIE BŁĘDÓW
+        [ -f "$output" ] && rm -f "$output"
+        
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - MODE: $NAME - BŁĄD: $(basename "$file")" >> konwersja_bledy.log
+        
+        # Powiadomienie MATE o błędzie
+        notify-send -u critical -i "dialog-error" "BŁĄD $NAME" "Plik usunięty! Sprawdź konwersja_bledy.log\n$(basename "$file")"
+        echo -e "\n\e[31m[BŁĄD]\e[0m Coś poszło nie tak. Usunięto: $(basename "$output")"
+    fi
+done
+
+echo -e "\n\e[34m--- WSZYSTKIE PLIKI PRZETWORZONE ---\e[0m"
+echo -e "Naciśnij [ENTER], aby zamknąć..."
+read

@@ -7,7 +7,7 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
-* **[Display Calibration for Low-Light Work](./linux/fixy/tryb-nocny.md)**  
+* **[PL/EN] [Display Calibration for Low-Light Work](./linux/fixy/tryb-nocny.md)**  
 ✅ *Optymalizacja temperatury barwowej (4200K) dla lepszej ostrości tekstu w nocy.*
 
 * **[PL/EN] [ThinkPad Meteor Lake HEVC Encoding](fixy/thinkpad-meteor-lake-video-turbo.md)**  

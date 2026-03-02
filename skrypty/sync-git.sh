@@ -12,7 +12,7 @@ fi
 REPO_DIR=$(git rev-parse --show-toplevel)
 REPO_NAME=$(basename "$REPO_DIR")
 MESSAGE="Automatyczny update ($REPO_NAME): $(date '+%Y-%m-%d %H:%M')"
-ICON_OK="vcs-normal"
+ICON_OK="dialog-ok"
 ICON_ERR="vcs-conflicting"
 
 echo "🚀 Start synchronizacji repozytorium: $REPO_NAME"

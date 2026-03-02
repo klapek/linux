@@ -57,12 +57,12 @@ for file in "${@:-*.[Mm][Kk][Vv]}"; do
         if [ $STATUS -eq 0 ]; then
              echo -e "\e[32m[SUKCES]\e[0m Zakończono w ${MIN}m ${SEC}s. V"
              echo "$(date '+%Y-%m-%d %H:%M:%S') - OK - $filename (${MIN}m ${SEC}s)" >> konwersja_sesja.log
-             notify-send -i "dialog-ok" "Gotowe! V" "$filename"
+             notify-send -i "kino" "Gotowe! V" "$filename"
         else
              # To jest przypadek plików k83 / Meteor Lake crash na końcu (99%)
              echo -e "\e[33m[UWAGA]\e[0m FFmpeg zgłosił błąd (99%), ale plik URATOWANY. V"
              echo "$(date '+%Y-%m-%d %H:%M:%S') - URATOWANY (Błąd 99%) - $filename" >> konwersja_sesja.log
-             notify-send -u critical -i "dialog-warning" "Uratowano plik V" "$filename"
+             notify-send -u critical -i "system-error" "Uratowano plik V" "$filename"
         fi
     else
         # Plik nie istnieje lub jest za mały (prawdziwy błąd)

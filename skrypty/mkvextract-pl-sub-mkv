@@ -1,51 +1,31 @@
 #!/bin/bash
 
-# Ustawienia
-QUALITY=23
-PRESET="slow"
-MAX_WIDTH=1280
+# Powiadomienie o rozpoczęciu - ikona 'dialog-information' jest standardem
+notify-send "Skrypt MKV" "Rozpoczynam przetwarzanie zaznaczonych plików..." -i dialog-information
 
-for input in "$@"; do
-    file=$(echo "$input" | sed 's|^file://||')
-    output="${file%.*}.FIXED.mkv"
-    start_time=$(date +%s)
+count=0
+total=$#
 
-    # Informacja startowa w dymku
-    notify-send -i dialog-information -t 3000 "FFmpeg" "Start: $(basename "$file")" 
-
-    # Uruchomienie ffmpeg z paskiem postępu Zenity
-    # Używamy --pulsate, bo ffmpeg nie podaje procentów w prosty sposób
-    (
-        ffmpeg -i "$file" \
-            -vf "scale='min($MAX_WIDTH,iw)':-2,hqdn3d" \
-            -c:v libx264 -crf $QUALITY -preset $PRESET \
-            -map 0:v:0 -map 0:a:m:language:pol? -map 0:a:0? -disposition:a:0 default \
-            -c:a aac -b:a 128k \
-            -sn -y "$output" 2>&1
-    ) | zenity --progress --title="Konwertowanie..." \
-               --text="Przetwarzam: $(basename "$file")\nTo może potrwać kilka minut." \
-               --pulsate --auto-close --width=400
-
-    # Sprawdzenie czy użytkownik nie zamknął okienka (Anuluj)
-    if [ "$?" -eq 1 ]; then
-        notify-send -u critical -i dialog-error "Przerwano" "Konwersja została anulowana przez użytkownika."
-        exit 1
-    fi
-
-    # Obliczanie czasu
-    end_time=$(date +%s)
-    duration=$(( end_time - start_time ))
-    
-    if [ $duration -lt 60 ]; then
-        TIME_MSG="$duration sek."
-    else
-        TIME_MSG="$(( duration / 60 )) min. $(( duration % 60 )) sek."
-    fi
-
-    # Podsumowanie
-    if [ -f "$output" ]; then
-        notify-send -i dialog-ok "Sukces!" "Plik gotowy.\nCzas: $TIME_MSG\nLokalizacja: $(basename "$output")"
-    else
-        notify-send -u critical -i dialog-error "Błąd" "Coś poszło nie tak z plikiem $(basename "$file")" 
+for filename in "$@"
+do
+    if [[ "$filename" == *.mkv ]]; then
+        ((count++))
+        
+        subs=$(mkvmerge -J "$filename" | jq -r '.tracks[] | select(.type=="subtitles") | select(.properties.language=="pol").id' | sed 'N;s/\n/,/') 
+        
+        if [[ -n $subs ]]; then
+             subs="-s $subs"
+        else
+            subs=-S
+        fi
+        
+        mkvmerge $subs -o "${filename%.mkv}-PLSUB.mkv" "$filename" > /dev/null 2>&1
     fi
 done
+
+# Powiadomienie końcowe - używamy 'task-complete' lub 'dialog-ok'
+if [ $count -gt 0 ]; then
+    notify-send "Skrypt MKV - - -> Zakończono pomyślnie" "Przetworzono plików: $count" -i kino
+else
+    notify-send "Błąd" "Nie znaleziono odpowiednich plików .mkv do przetworzenia." -i system-error
+fi

@@ -33,14 +33,14 @@ do
         else
             echo -e "\e[31mBŁĄD:\e[0m Nie udało się utworzyć $output"
             [ -f "$output" ] && rm "$output"
-            [ -n "$NOTIFY" ] && $NOTIFY "BŁĄD" "Nie udało się przetworzyć $(basename "$filename")" -u critical -i error
+            [ -n "$NOTIFY" ] && $NOTIFY "BŁĄD" "Nie udało się przetworzyć $(basename "$filename")" -u critical -i system-error
         fi
     else
         echo -e "\e[33mPOMINIĘTO:\e[0m $filename (brak polskich napisów)"
         # NOWY DYMEK DLA POMINIĘTYCH PLIKÓW
-        [ -n "$NOTIFY" ] && $NOTIFY "Pominięto plik" "Brak PL napisów w: $(basename "$filename")" -t 10000 -i dialog-warning
+        [ -n "$NOTIFY" ] && $NOTIFY "Pominięto plik" "Brak PL napisów w: $(basename "$filename")" -t 10000 -i gnome-warning
     fi
 done
 
 # Powiadomienie o zakończeniu całego procesu
-[ -n "$NOTIFY" ] && $NOTIFY "FFmpeg Skrypt" "Zakończono przetwarzanie wszystkich plików." -i checkbox
+[ -n "$NOTIFY" ] && $NOTIFY "FFmpeg Skrypt" "Zakończono przetwarzanie wszystkich plików." -i kino

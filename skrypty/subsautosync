@@ -24,7 +24,7 @@ done
 
 # 3. Weryfikacja czy mamy komplet
 if [ -z "$SRT_FILE" ] || [ -z "$VIDEO_FILE" ]; then
-    notify-send -u critical "Błąd" "Nie wykryto pary Wideo + SRT. Sprawdź rozszerzenia." -i dialog-error
+    notify-send -u critical "Błąd" "Nie wykryto pary Wideo + SRT. Sprawdź rozszerzenia." -i system-error
     exit 1
 fi
 
@@ -39,11 +39,11 @@ if "$FFSUB" "$VIDEO_FILE" -i "$SRT_FILE" -o "$TEMP_SRT"; then
     if [ -f "$TEMP_SRT" ]; then
         # Nadpisanie oryginalnego pliku
         mv -f "$TEMP_SRT" "$SRT_FILE"
-        notify-send "Sukces!" "Plik $(basename "$SRT_FILE") został zsynchronizowany i nadpisany." -i dialog-ok
+        notify-send "Sukces!" "Plik $(basename "$SRT_FILE") został zsynchronizowany i nadpisany." -i kino
     else
-        notify-send -u critical "Błąd" "Błąd zapisu pliku tymczasowego." -i dialog-error
+        notify-send -u critical "Błąd" "Błąd zapisu pliku tymczasowego." -i system-error
     fi
 else
     rm -f "$TEMP_SRT"
-    notify-send -u critical "Błąd" "FFsubsync zawiódł. Możliwy brak ścieżki audio." -i dialog-error
+    notify-send -u critical "Błąd" "FFsubsync zawiódł. Możliwy brak ścieżki audio." -i system-error
 fi

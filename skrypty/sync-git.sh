@@ -3,7 +3,7 @@
 # --- KONFIGURACJA INTELIGENTNA ---
 # Sprawdzamy, czy jesteśmy w folderze, który jest pod kontrolą Git
 if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-    notify-send -i "vcs-conflicting" "Git Sync" "To nie jest folder repozytorium!"
+    notify-send -i "system-error" "Git Sync" "To nie jest folder repozytorium!"
     echo "❌ Błąd: Musisz być wewnątrz folderu repo (np. linux lub starex4x4)."
     exit 1
 fi
@@ -12,8 +12,8 @@ fi
 REPO_DIR=$(git rev-parse --show-toplevel)
 REPO_NAME=$(basename "$REPO_DIR")
 MESSAGE="Automatyczny update ($REPO_NAME): $(date '+%Y-%m-%d %H:%M')"
-ICON_OK="vcs-normal"
-ICON_ERR="vcs-conflicting"
+ICON_OK="git"
+ICON_ERR="system-error"
 
 echo "🚀 Start synchronizacji repozytorium: $REPO_NAME"
 cd "$REPO_DIR" || exit 1

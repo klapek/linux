@@ -33,4 +33,4 @@ Linux Mint lacks the `gammastep-indicator` package. The solution is to create a 
 
 ## 📄 Skrypt / Script  
 
-👉 **[Pobierz skrypt / Download script](../../linux/skrypty/tryb.nocny-gammastep.sh)**
+👉 **[Pobierz skrypt / Download script](../skrypty/tryb.nocny-gammastep.sh)**

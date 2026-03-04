@@ -30,6 +30,3 @@ Add to `~/.bashrc`:
 
 ## ⚙️ Użycie / Usage  
 `mdview nazwa_pliku.md`  
-
----
-**Created by:** Gemini for Starex4x4 Project

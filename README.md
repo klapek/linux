@@ -7,6 +7,9 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
+* **[PL/EN] [Keyboard Initialization Fix (ThinkPad E16 Gen 2)](fixy/inicjalizacja-klawiatury.md)**  
+ *Naprawa blokowania klawiszy (P, S, G, K, B, N) po starcie.*
+
 * **[PL/EN] [Display Calibration for Low-Light Work](./fixy/tryb-nocny.md)**  
 ✅ *Optymalizacja temperatury barwowej (4200K) dla lepszej ostrości tekstu w nocy.*
 

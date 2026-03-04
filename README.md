@@ -7,7 +7,7 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
-* **[PL/EN] [MD Terminal Viewer](./linux/fixy/md-terminal-viewer.md)**  
+* **[PL/EN] [MD Terminal Viewer](./linux/fixy/mdview.md)**  
  ✅ *Podgląd plików Markdown w terminalu z zachowaniem formatowania i kolorów.*
 
 * **[PL/EN] [Keyboard Initialization Fix (ThinkPad E16 Gen 2)](fixy/inicjalizacja-klawiatury.md)**  

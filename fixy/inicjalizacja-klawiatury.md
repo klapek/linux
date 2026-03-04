@@ -1,4 +1,6 @@
-# Knowledge Pack: Keyboard Initialization Fix (ThinkPad E16 Gen 2)
+# ThinkPad E16 Gen 2 
+# Keyboard Initialization Fix 
+# Naprawa procesu inicjalizacji klawiatury
 
 ---
 

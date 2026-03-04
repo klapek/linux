@@ -1,5 +1,7 @@
 # Knowledge Pack: Keyboard Initialization Fix (ThinkPad E16 Gen 2)
 
+---
+
 ## PL: Naprawa blokowania klawiszy (P, S, G, K, B, N) po starcie
 **Problem:** Na systemie Mint 22.3 (MATE) z jądrem 6.8.0-101, po zimnym starcie i samoczynnym przejściu przez menu GRUB (timeout), wybrane klawisze (P, S, G, K, B, N) przestawały reagować na ekranie logowania. Problem nie występował, jeśli użytkownik manualnie zatwierdził wybór w GRUB klawiszem Enter.
 

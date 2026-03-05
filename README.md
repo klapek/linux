@@ -7,10 +7,13 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
+* **[PL/EN] [Timeshift Excessive Disk Usage on Linux Mint](./fixy/timeshift-fix.md)**  
+ Fix na nadmierne zużycie dysku przez Timeshift na Linux Mint (MATE)
+
 * **[PL/EN] [MD Terminal Viewer](./fixy/mdview.md)**  
  ✅ *Podgląd plików Markdown w terminalu z zachowaniem formatowania i kolorów.*
 
-* **[PL/EN] [Keyboard Initialization Fix (ThinkPad E16 Gen 2)](fixy/inicjalizacja-klawiatury.md)**  
+* **[PL/EN] [Keyboard Initialization Fix (ThinkPad E16 Gen 2)](./fixy/inicjalizacja-klawiatury.md)**  
  *Naprawa blokowania klawiszy (P, S, G, K, B, N) po starcie.*
 
 * **[PL/EN] [Display Calibration for Low-Light Work](./fixy/tryb-nocny.md)**  

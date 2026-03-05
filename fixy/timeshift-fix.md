@@ -36,12 +36,12 @@ sudo du -sh --count-links /timeshift
 
 **2. Cleanup / Czyszczenie**
 
-(PL) Usuń stare, spuchnięte migawki przez GUI Timeshift.
+(PL) Usuń stare, spuchnięte migawki przez GUI Timeshift.  
 (EN) Delete old, bloated snapshots via Timeshift GUI.
 
 **3. Maintenance / Konserwacja**
 
-(PL) Po czystce system powinien zajmować ok. 20-30 GB na partycji /.
+(PL) Po czystce system powinien zajmować ok. 20-30 GB na partycji /.  
 (EN) After cleanup, the system should occupy approx. 20-30 GB on the / partition.
 
 ---
@@ -52,7 +52,7 @@ sudo du -sh --count-links /timeshift
 (EN) Timeshift in RSYNC mode uses hard links. The first copy takes as much as the system (~35GB). Subsequent copies take only differences, but GUI tools (Caja) and simple `df` may incorrectly report total usage.
 
 ## Correct Verification / Prawidłowa weryfikacja
-(PL) Nie ufaj standardowemu `du` bez flag. Użyj:
+(PL) Nie ufaj standardowemu `du` bez flag. Użyj:  
 (EN) Do not trust standard `du` without flags. Use:
 ```bash
 sudo du -sh -l /timeshift 2>/dev/null

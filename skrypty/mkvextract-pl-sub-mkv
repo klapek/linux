@@ -11,21 +11,25 @@ do
     if [[ "$filename" == *.mkv ]]; then
         ((count++))
         
-        subs=$(mkvmerge -J "$filename" | jq -r '.tracks[] | select(.type=="subtitles") | select(.properties.language=="pol").id' | sed 'N;s/\n/,/') 
+        # Pobieramy ID polskich napisów
+        sub_id=$(mkvmerge -J "$filename" | jq -r '.tracks[] | select(.type=="subtitles") | select(.properties.language=="pol").id' | head -n 1) 
         
-        if [[ -n $subs ]]; then
-             subs="-s $subs"
+        if [[ -n $sub_id ]]; then
+            # -s $sub_id wybiera tylko te napisy
+            # --default-track $sub_id:1 ustawia je jako domyślne
+            subs="-s $sub_id --default-track $sub_id:1"
         else
-            subs=-S
+            subs="-S"
         fi
         
         mkvmerge $subs -o "${filename%.mkv}-PLSUB.mkv" "$filename" > /dev/null 2>&1
+        echo "V Przetworzono: $filename"
     fi
 done
 
 # Powiadomienie końcowe - używamy 'task-complete' lub 'dialog-ok'
 if [ $count -gt 0 ]; then
-    notify-send "Skrypt MKV - - -> Zakończono pomyślnie" "Przetworzono plików: $count" -i kino
+    notify-send "Skrypt MKV -> Zakończono pomyślnie" "Przetworzono plików: $count" -i dialog-information
 else
-    notify-send "Błąd" "Nie znaleziono odpowiednich plików .mkv do przetworzenia." -i system-error
+    notify-send "Błąd" "Nie znaleziono odpowiednich plików .mkv do przetworzenia." -i dialog-error
 fi

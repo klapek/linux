@@ -18,7 +18,7 @@ mkdir -p convert
 for file in "${@:-*.[Mm][Kk][Vv]}"; do
     [ -e "$file" ] || continue
     filename=$(basename "$file")
-    output="convert/${filename%.*}.x265.HEVC-AiP.mkv"
+    output="convert/${filename%.*}.x265.HEVC-.mkv"
     start_time=$(date +%s)
     echo -e "\n\e[33m[START] Przetwarzam: $filename\e[0m"
 

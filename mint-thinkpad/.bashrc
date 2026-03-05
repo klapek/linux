@@ -138,3 +138,7 @@ export FZF_CTRL_T_OPTS="
 
 # Created by `pipx` on 2026-02-05 16:55:10
 export PATH="$PATH:/home/klapek/.local/bin"
+
+alias gitsync='~/Projekty/linux/skrypty/sync-git.sh'
+
+alias mdview='f(){ python3 -m rich.markdown -c "$1" | less -R; }; f'

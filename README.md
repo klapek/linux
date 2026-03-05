@@ -45,11 +45,11 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 * Środowisko: MATE
 * Przeznaczenie: Praca codzienna, terminal, bazy danych.
 
-### ⚓ [Salix: Workstation (Skała)](https://github.com/klapek/linux/tree/main/salix-desktop)
+### ⚓ [Salix: Workstation (Skała)](https://github.com/klapek/linux/tree/main/salix)
 * Środowisko: Xfce
 * Przeznaczenie: Stabilna praca stacjonarna.
 
-### ⛴️ [Slackware: Asus Aspire One (Legend)](https://github.com/klapek/linux/tree/main/slack-asus)
+### ⛴️ [Slackware: Asus Aspire One (Legend)](https://github.com/klapek/linux/tree/main/slack-asus-one)
 * Środowisko: Fluxbox
 * Przeznaczenie: Minimalizm, lekkość, retro-coding.
 

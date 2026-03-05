@@ -15,14 +15,18 @@ for input in "$@"; do
 
     # --- KONFIGURACJA LINII FFMPEG ---
 
-    # OPCJA 1: ULTRA-TURBO (Domyślna - Kopiowanie dźwięku, x40 speed)
-    ffmpeg -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -extra_hw_frames 64 -hwaccel_output_format vaapi \
+    # OPCJA 1: ULTRA-TURBO (Domyślna - Kopiowanie dźwięku i pl napisów, x40 speed)
+    if [ "$MODE" == "1" ]; then
+        # TURBO z zachowaniem polskich napisów
+        ffmpeg -init_hw_device vaapi=intel:/dev/dri/renderD128,extra_hw_frames=128 -hwaccel vaapi -hwaccel_output_format vaapi \
         -i "$file" \
-        -vf "scale_vaapi=1280:-2" \
-        -c:v hevc_vaapi -qp "$QUALITY" \
-        -map 0:v:0 -map 0:a:0 \
-        -c:a copy -sn \
-        -max_muxing_queue_size 1024 -y "$output"
+        -map 0:v:0 \
+        -map 0:a:m:language:pol? -map 0:a:0? \
+        -map 0:s:m:language:pol? \
+        -c:v hevc_vaapi -qp "$QUALITY" -async_depth 2 \
+        -c:a copy \
+        -c:s copy \
+        -max_muxing_queue_size 8192 -y "$output"
 
     # OPCJA 2: WYCISKARKA (Zakomentowana - pod rarytasy typu Vorbis/DTS)
     # ffmpeg -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -hwaccel_output_format vaapi \

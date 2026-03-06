@@ -10,11 +10,11 @@
 
 ## Analysis / Analiza
 
-### Check real vs reported space / Sprawdź realne vs raportowane miejsce
+## Correct Verification / Prawidłowa weryfikacja
+(PL) Nie ufaj standardowemu `du` bez flag. Użyj:  
+(EN) Do not trust standard `du` without flags. Use:
 ```bash
-# DF might show virtual usage, DU with --count-links shows physical reality
-# DF może pokazywać wirtualne zużycie, DU z --count-links pokazuje fizyczną prawdę
-sudo du -sh --count-links /timeshift
+sudo du -sh -l /timeshift 2>/dev/null
 ```
 ---
 
@@ -51,12 +51,6 @@ sudo du -sh --count-links /timeshift
 
 (EN) Timeshift in RSYNC mode uses hard links. The first copy takes as much as the system (~35GB). Subsequent copies take only differences, but GUI tools (Caja) and simple `df` may incorrectly report total usage.
 
-## Correct Verification / Prawidłowa weryfikacja
-(PL) Nie ufaj standardowemu `du` bez flag. Użyj:  
-(EN) Do not trust standard `du` without flags. Use:
-```bash
-sudo du -sh -l /timeshift 2>/dev/null
-```
 
 V Status: Resolved / Naprawiono
 Device: ThinkPad

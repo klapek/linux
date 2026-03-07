@@ -135,6 +135,17 @@ export FZF_CTRL_T_OPTS="
 # CTRL + r = fzf hi story
 # ALT + c = fzf cd 
 
+# 1. Kasujemy przekomplikowany MANPAGER (to on śmieci i daje pomarańcz)
+unset MANPAGER
+
+# 2. Wymuszamy interpretację kolorów (kluczowe w Mincie!)
+export GROFF_NO_SGR=1
+
+# 3. Ustawiamy czyste kolory pod styl CTT (Niebieski + Zielony)
+export LESS_TERMCAP_md=$'\e[1;34m' # Nagłówki na Niebiesko
+export LESS_TERMCAP_us=$'\e[1;32m' # Podkreślenia na Zielono
+export LESS_TERMCAP_me=$'\e[0m'    # Reset
+export LESS_TERMCAP_ue=$'\e[0m'    # Reset
 
 # Created by `pipx` on 2026-02-05 16:55:10
 export PATH="$PATH:/home/klapek/.local/bin"
@@ -145,3 +156,4 @@ alias mdview='f(){ python3 -m rich.markdown -c "$1" | less -R; }; f'
 alias img='feh -. -B black -g 800x600'
 alias pdfview='f(){ pdftotext "$1" - | python3 -m rich.markdown -c /dev/stdin | less -R; }; f'
 alias pdf='zathura'
+alias htmlview='f(){ links -dump "$1" | less; }; f'

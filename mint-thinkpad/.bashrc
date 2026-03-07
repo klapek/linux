@@ -142,3 +142,4 @@ export PATH="$PATH:/home/klapek/.local/bin"
 alias gitsync='~/Projekty/linux/skrypty/sync-git.sh'
 
 alias mdview='f(){ python3 -m rich.markdown -c "$1" | less -R; }; f'
+alias img=feh -. -B black -g 800x600

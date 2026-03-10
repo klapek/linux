@@ -1,8 +1,9 @@
 #!/bin/bash
 # ThinkPad E16 G2 - D-Turbo (Samsung-Ready)
-# Max Speed + Human Readable Time + Terminal Stay
+# Fix: Syntax & Exit Status Logic
 
 QUALITY="25"
+MODE="1"
 
 for input in "$@"; do
     file=$(echo "$input" | sed 's|^file://||')
@@ -14,10 +15,7 @@ for input in "$@"; do
     notify-send -i "dialog-ok" "ThinkPad D-Turbo" "Start: $(basename "$file")"
 
     # --- KONFIGURACJA LINII FFMPEG ---
-
-    # OPCJA 1: ULTRA-TURBO (Domyślna - Kopiowanie dźwięku i pl napisów, x40 speed)
     if [ "$MODE" == "1" ]; then
-        # TURBO z zachowaniem polskich napisów
         ffmpeg -init_hw_device vaapi=intel:/dev/dri/renderD128,extra_hw_frames=128 -hwaccel vaapi -hwaccel_output_format vaapi \
         -i "$file" \
         -map 0:v:0 \
@@ -27,21 +25,15 @@ for input in "$@"; do
         -c:a copy \
         -c:s copy \
         -max_muxing_queue_size 8192 -y "$output"
+        
+        FFMPEG_STATUS=$?
+    fi
 
-    # OPCJA 2: WYCISKARKA (Zakomentowana - pod rarytasy typu Vorbis/DTS)
-    # ffmpeg -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -hwaccel_output_format vaapi \
-    #    -i "$file" \
-    #    -vf "scale_vaapi=1280:-2" \
-    #    -c:v hevc_vaapi -qp "$QUALITY" \
-    #    -map 0:v:0 -map 0:a:0 \
-    #    -c:a aac -ac 2 -b:a 128k \
-    #    -sn -y "$output"
-
-    if [ $? -eq 0 ]; then
+    # --- SPRAWDZANIE WYNIKU ---
+    if [ $FFMPEG_STATUS -eq 0 ]; then
         end_time=$(date +%s)
         duration=$(( end_time - start_time ))
         
-        # Przeliczanie na minuty i sekundy
         MIN=$(( duration / 60 ))
         SEC=$(( duration % 60 ))
         
@@ -55,15 +47,14 @@ for input in "$@"; do
         echo -e "\n\e[32m[SUKCES]\e[0m Proces zakończony w $TIME_DISPLAY."
     else
         # --- CZYSZCZENIE I LOGOWANIE ---
-        [ -f "$output" ] && rm -f "$output"  # USUWA USZKODZONY PLIK, JEŚLI ISTNIEJE
+        [ -f "$output" ] && rm -f "$output"
         
-        echo "$(date '+%Y-%m-%d %H:%M:%S') - BŁĄD (USUNIĘTO): $(basename "$file")" >> bledy_turbo.log
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - BŁĄD: $(basename "$file")" >> bledy_turbo.log
         
-        notify-send -u critical -i "dialog-error" "Błąd D-Turbo" "Plik usunięty! Sprawdź bledy_turbo.log"
-        echo -e "\n\e[31m[BŁĄD]\e[0m Konwersja nieudana. Usunięto uszkodzony plik: $(basename "$output")"
-        # ------------------------------
+        notify-send -u critical -i "dialog-error" "Błąd D-Turbo" "Sprawdź bledy_turbo.log"
+        echo -e "\n\e[31m[BŁĄD]\e[0m Konwersja nieudana dla: $(basename "$file")"
     fi
 done
 
-echo -e "\nNaciśnij [ENTER], aby zamknąć to okno..."
-read  # To zatrzymuje terminal przed zamknięciem
+echo -e "\nNaciśnij [ENTER], aby zamknąć..."
+read

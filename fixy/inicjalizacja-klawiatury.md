@@ -18,7 +18,6 @@ Wymuszenie stabilnego trybu komunikacji z kontrolerem poprzez parametry jądra.
 1. Edycja pliku `/etc/default/grub`.
 2. Dodanie parametrów do linii `GRUB_CMDLINE_LINUX_DEFAULT`:
    - `i8042.direct`: Bezpośrednie odpytywanie portów kontrolera (pomija błędne ACK).
-   - `i8042.dumbkbd`: Wyłączenie sterowania LED podczas initu (zapobiega przepełnieniu bufora).
 3. Aktualizacja: `sudo update-grub`.
 
 **Status:** Zweryfikowano (7/7 udanych startów bez ingerencji w GRUB).
@@ -41,7 +40,6 @@ Forcing a stable communication mode with the controller via kernel parameters.
 1. Edit `/etc/default/grub`.
 2. Add the following to `GRUB_CMDLINE_LINUX_DEFAULT`:
    - `i8042.direct`: Enables direct polling of controller ports (bypasses faulty ACK checks).
-   - `i8042.dumbkbd`: Disables LED control during initialization (prevents buffer overflows).
 3. Update: `sudo update-grub`.
 
 **Status:** Verified (7/7 successful boots without manual GRUB interaction).

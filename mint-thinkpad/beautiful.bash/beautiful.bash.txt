@@ -1,0 +1,14 @@
+BEAUTIFUL FONT (bez git od ctt)
+
+1. curl -sS https://starship.rs/install.sh | sh
+
+2. https://www.nerdfonts.com/font-downloads (MesloNG Nerd Font)
+2a. unzip > ~/.fonts/
+2b. fc-cache
+
+3. Terminal Opcje - wybrać font  MesloLGL Nerd Font Mono Regular
+
+4. plik starship.toml > ~/.config/
+
+5. ~/.bashrc - na końcu dodać:   eval "$(starship init bash)"
+5a. przejrzeć z oryginalnego bashrc jakie aliasy i inne rzeczy się mogą przydać i skopiować

@@ -1,45 +1,47 @@
-# ThinkPad E16 Gen 2 
-# Keyboard Initialization Fix 
-# Naprawa procesu inicjalizacji klawiatury
+# Knowledge Pack: Keyboard Initialization Fix (ThinkPad E16 Gen 2)
 
----
+## PL: Naprawa blokowania klawiszy (P, S, G, K, B, N) i przywrócenie diod LED
 
-## PL: Naprawa blokowania klawiszy (P, S, G, K, B, N) po starcie
+**Problem:**  
+ Na systemie Mint 22.3 (MATE) z jądrem 6.8.0-101, po zimnym starcie i samoczynnym przejściu przez menu GRUB, wybrane klawisze (P, S, G, K, B, N) przestawały reagować. Standardowy parametr `i8042.dumbkbd` naprawiał klawisze, ale wyłączał diody CapsLock i NumLock.
 
-### **Problem:** 
-Na systemie Mint 22.3 (MATE) z jądrem 6.8.0-101, po zimnym starcie i samoczynnym przejściu przez menu GRUB (timeout), wybrane klawisze (P, S, G, K, B, N) przestawały reagować na ekranie logowania. Problem nie występował, jeśli użytkownik manualnie zatwierdził wybór w GRUB klawiszem Enter.
+**Diagnoza:**  
+Problem wynika z błędu synchronizacji (race condition) między jądrem a Embedded Controllerem (EC). Próba inicjalizacji diod LED w tym samym momencie co matrycy klawiatury powodowała zawieszenie jednej z linii sygnałowych matrycy.
 
-### **Diagnoza:**
-Błąd wynika z "wyścigu" (race condition) podczas inicjalizacji kontrolera i8042 (odpowiedzialnego za klawiaturę i trackpoint) w nowszych wersjach jądra. Klawisze P, S, G, K, B, N współdzielą wspólną linię w matrycy klawiatury (Keyboard Matrix). Błąd synchronizacji powodował zablokowanie konkretnego rejestru kontrolera EC (Embedded Controller), co "wycinało" całą sekcję matrycy.
+**Rozwiązanie (Wersja stabilna z diodami):**  
+Zastosowanie parametrów wymuszających pełny reset kontrolera i wyłączających multipleksowanie, co stabilizuje init bez blokowania diod LED.
 
-### **Rozwiązanie:**
-Wymuszenie stabilnego trybu komunikacji z kontrolerem poprzez parametry jądra.
-
-1. Edycja pliku `/etc/default/grub`.
-2. Dodanie parametrów do linii `GRUB_CMDLINE_LINUX_DEFAULT`:
-   - `i8042.direct`: Bezpośrednie odpytywanie portów kontrolera (pomija błędne ACK).
+1. Edycja `/etc/default/grub`.
+2. Dodanie parametrów:
+   `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash i8042.direct i8042.reset i8042.nomux"`
+   - `i8042.direct`: Bezpośrednie odpytywanie portów.
+   - `i8042.reset`: Wymusza reset kontrolera przy starcie (kluczowe dla diod LED).
+   - `i8042.nomux`: Wyłącza aktywne multipleksowanie, poprawiając stabilność matrycy.
 3. Aktualizacja: `sudo update-grub`.
 
-**Status:** Zweryfikowano (7/7 udanych startów bez ingerencji w GRUB).
+**Status:**   
+Zweryfikowano - klawisze działają, diody Caps/Num świecą poprawnie.
 
 ---
 
-## EN: Keyboard Init Fix (Keys P, S, G, K, B, N Unresponsive)
+## EN: Keyboard Init Fix (Keys P, S, G, K, B, N & LED Recovery)
 
-### **Issue:** 
-On Mint 22.3 (MATE) with kernel 6.8.0-101, after a cold boot and GRUB timeout, specific keys (P, S, G, K, B, N) would fail at the login screen. The issue was absent if the user manually pressed Enter in the GRUB menu.
+**Issue:**  
+ On Mint 22.3 (MATE) with kernel 6.8.0-101, keys (P, S, G, K, B, N) became unresponsive after GRUB timeout. While `i8042.dumbkbd` fixed the keys, it disabled CapsLock/NumLock LEDs.
 
-### **Diagnosis:**
-The problem is caused by a race condition during the i8042 controller initialization (handling the keyboard and trackpoint) in the 6.8 kernel series. The keys P, S, G, K, B, and N share a common strobe line in the keyboard matrix. An initialization sync error caused the Embedded Controller (EC) register to lock up, effectively disabling that part of the matrix.
+**Diagnosis:**  
+A race condition between the kernel and the Embedded Controller (EC). Initializing LEDs simultaneously with the keyboard matrix caused a strobe line lockup in the matrix.
 
-
-
-### **Solution:**
-Forcing a stable communication mode with the controller via kernel parameters.
+**Solution (Stable version with LEDs):**  
+Using parameters that force a controller reset and disable multiplexing to stabilize initialization without blocking LED communication.
 
 1. Edit `/etc/default/grub`.
-2. Add the following to `GRUB_CMDLINE_LINUX_DEFAULT`:
-   - `i8042.direct`: Enables direct polling of controller ports (bypasses faulty ACK checks).
+2. Append the following parameters:
+   `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash i8042.direct i8042.reset i8042.nomux"`
+   - `i8042.direct`: Enables direct port polling.
+   - `i8042.reset`: Forces controller reset during boot (essential for LED sync).
+   - `i8042.nomux`: Disables active multiplexing to prevent matrix conflicts.
 3. Update: `sudo update-grub`.
 
-**Status:** Verified (7/7 successful boots without manual GRUB interaction).
+**Status:**   
+Verified - keys are responsive, Caps/Num LEDs functional.

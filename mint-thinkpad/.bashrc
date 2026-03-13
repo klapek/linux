@@ -157,3 +157,7 @@ alias img='feh -. -B black -g 800x600'
 alias pdfview='f(){ pdftotext "$1" - | python3 -m rich.markdown -c /dev/stdin | less -R; }; f'
 alias pdf='zathura'
 alias htmlview='f(){ links -dump "$1" | less; }; f'
+# Moje aliasy eza 
+alias ls='eza --icons=always --group-directories-first'
+alias ll='eza -lh --icons=always --group-directories-first --git'
+alias lt='eza --tree --level=2 --icons=always' # Widok drzewa

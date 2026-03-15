@@ -7,6 +7,9 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
+* **[PL/EN] [mpv/yt-dlp Fix](./fixy/mpv-yt.md)**  
+ ✅ *Naprawa buforowania i aktualizacja yt-dlp do najnowszej wersji z Git.*
+
 * **[PL/EN] [Timeshift Excessive Disk Usage on Linux Mint](./fixy/timeshift-fix.md)**  
  Fix na nadmierne zużycie dysku przez Timeshift na Linux Mint (MATE)
 

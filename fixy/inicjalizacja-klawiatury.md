@@ -17,6 +17,7 @@ Zastosowanie parametrów wymuszających pełny reset kontrolera i wyłączający
    - `i8042.direct`: Bezpośrednie odpytywanie portów.
    - `i8042.reset`: Wymusza reset kontrolera przy starcie (kluczowe dla diod LED).
    - `i8042.nomux`: Wyłącza aktywne multipleksowanie, poprawiając stabilność matrycy.
+   - `i8042.nopnp`: Kluczowy dla stabilności przy bezczynności. Ignoruje instrukcje ACPI dotyczące usypiania klawiatury.
 3. Aktualizacja: `sudo update-grub`.
 
 **Status:**   
@@ -41,6 +42,7 @@ Using parameters that force a controller reset and disable multiplexing to stabi
    - `i8042.direct`: Enables direct port polling.
    - `i8042.reset`: Forces controller reset during boot (essential for LED sync).
    - `i8042.nomux`: Disables active multiplexing to prevent matrix conflicts.
+   - `i8042.nopnp`: Critical for idle stability. Bypasses ACPI-based power management for the i8042 controller.
 3. Update: `sudo update-grub`.
 
 **Status:**   

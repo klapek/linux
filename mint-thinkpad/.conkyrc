@@ -57,7 +57,7 @@ ${font OpenLogos:size=20}M${font Ubuntu:size=9}${voffset -7}${offset 5}${font Ub
 ${hr 1}
 # --- Sekcja Bateria ---
 ${font Poky:size=20}E${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Bateria:${font Ubuntu:size=9}
-${color}Bateria: ${alignr}${font Ubuntu:style=Bold:size=11}${battery_percent BAT0}% / ${color yellow}${hwmon thinkpad temp 4}°C${font}${color}
+${color}Bateria: ${alignr}${font Ubuntu:style=Bold:size=11}${battery_percent BAT0}% ${font}${color}
 ${color}Cykle ładowania: ${alignr}${font Ubuntu:style=Bold:size=10}${execi 3600 cat /sys/class/power_supply/BAT0/cycle_count}${font}
 ${color}Kondycja ogniw: ${alignr}${font Ubuntu:style=Bold:size=10}${execi 3600 expr $(cat /sys/class/power_supply/BAT0/energy_full) \* 100 / $(cat /sys/class/power_supply/BAT0/energy_full_design)}%${font}
 ${color}Zasilanie: ${alignr}${acpiacadapter}

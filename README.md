@@ -7,6 +7,9 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
+* **[PL/EN] [Intel AX211 BT Fix ](./fixy/bt-stabilizacja.md)**  
+ ✅ *Rozwiązanie problemu znikającego Bluetooth*
+
 * **[PL/EN] [mpv/yt-dlp Fix](./fixy/mpv-yt.md)**  
  ✅ *Naprawa buforowania i aktualizacja yt-dlp do najnowszej wersji z Git.*
 

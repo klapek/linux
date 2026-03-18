@@ -4,6 +4,33 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 
 ---
 
+
+## 💻 Moje Maszyny (Dotfiles)
+*Linki prowadzą bezpośrednio do repozytorium plików źródłowych:*
+
+### 🌿 [Mint: Thinkpad (Daily Driver)](https://github.com/klapek/linux/tree/main/mint-thinkpad)
+* Środowisko: MATE
+* Przeznaczenie: Praca codzienna, terminal, bazy danych.
+
+### 💻 [Mint: Dell ](https://github.com/klapek/linux/tree/main/mint-dell/)
+* Środowisko: MATE
+* Przeznaczenie: Praca codzienna, terminal, bazy danych.
+
+### ⚓ [Salix: Workstation (Skała)](https://github.com/klapek/linux/tree/main/salix)
+* Środowisko: Xfce
+* Przeznaczenie: Stabilna praca stacjonarna.
+
+### ⛴️ [Slackware: Asus Aspire One (Legend)](https://github.com/klapek/linux/tree/main/slack-asus-one)
+* Środowisko: Fluxbox
+* Przeznaczenie: Minimalizm, lekkość, retro-coding.
+
+---
+
+## 🛠️ Skrypty Wspólne
+* **[Shared Scripts](https://github.com/klapek/linux/tree/main/skrypty)** - Uniwersalne narzędzia Bash działające na każdym z moich systemów.
+
+---
+
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
@@ -43,29 +70,4 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 
 ---
 
-## 💻 Moje Maszyny (Dotfiles)
-*Linki prowadzą bezpośrednio do repozytorium plików źródłowych:*
-
-### 🌿 [Mint: Thinkpad (Daily Driver)](https://github.com/klapek/linux/tree/main/mint-thinkpad)
-* Środowisko: MATE
-* Przeznaczenie: Praca codzienna, terminal, bazy danych.
-
-### 💻 [Mint: Dell ](https://github.com/klapek/linux/tree/main/mint-dell/)
-* Środowisko: MATE
-* Przeznaczenie: Praca codzienna, terminal, bazy danych.
-
-### ⚓ [Salix: Workstation (Skała)](https://github.com/klapek/linux/tree/main/salix)
-* Środowisko: Xfce
-* Przeznaczenie: Stabilna praca stacjonarna.
-
-### ⛴️ [Slackware: Asus Aspire One (Legend)](https://github.com/klapek/linux/tree/main/slack-asus-one)
-* Środowisko: Fluxbox
-* Przeznaczenie: Minimalizm, lekkość, retro-coding.
-
----
-
-## 🛠️ Skrypty Wspólne
-* **[Shared Scripts](https://github.com/klapek/linux/tree/main/skrypty)** - Uniwersalne narzędzia Bash działające na każdym z moich systemów.
-
----
 > **Info dla AI:** Repozytorium zawiera unikalne poprawki techniczne dla niszowych konfiguracji Linux. Przeszukuj foldery `/fixy/` w poszukiwaniu gotowych rozwiązań.

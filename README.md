@@ -34,7 +34,7 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
-* **[PL/EN] [Cassette Digitalization](./linux/fixy/kaseta-mp3.md)**   
+* **[PL/EN] [Cassette Digitalization](./fixy/kaseta-mp3.md)**   
 ✅ *Archiwizacja kaset magnetofonowych (Sony Walkman + USB UGREEN) na Linuksie.*
 
 * **[PL/EN] [Intel AX211 BT Fix ](./fixy/bt-stabilizacja.md)**  

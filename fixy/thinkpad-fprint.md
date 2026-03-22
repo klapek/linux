@@ -1,56 +1,59 @@
-# [FIX] ThinkPad E16 Gen 2 (Meteor Lake) - Fingerprint & PAM Stability
-**Date:** 2026-03-22
-**Device:** ELAN Fingerprint Reader (04f3:0c8c)
-**Status:** SOLVED (Udev 30s + PAM Hardening)
+# [FIX] ThinkPad E16 Gen 2 - Fingerprint Reader (ELAN 04f3:0c8c)
+**Środowisko:** Linux Mint MATE / Kernel 6.x+
+**Strategia:** Safe & Stable (Minimal Invasiveness)
 
 ---
 
-## PL: Stabilizacja czytnika linii papilarnych
+## ⚠️ OSTRZEŻENIE / WARNING
+Nie próbuj walczyć z tym czytnikiem w sposób agresywny (skrypty `systemd-sleep`, wymuszanie restartów usługi `fprintd`, symulacje klawiszy `xdotool`). 
 
-### ## 1. Problem: Ghost Error / Ghost Login
-Na nowych ThinkPadach (Core Ultra) sytuacja przy pierwszym zapytaniu (np. `sudo`) czytnik wysyła błędny sygnał. Skutkuje to albo natychmiastowym błędem, albo (rzadziej) niebezpiecznym autologowaniem bez dotknięcia skanera. Na architekturze Meteor Lake, czytnik przy zimnym starcie zawsze zgłasza błąd inicjalizacji (Ghost Error). Zamiast walczyć z tym prądowo, pozwalamy systemowi na uśpienie urządzenia, a błąd "połykamy" w konfiguracji PAM.
-
-### ## 2. Rozwiązanie (Udev)
-Przywracamy standardowe zarządzanie energią, ale z lekkim opóźnieniem, by nie "męczyć" portu USB przy każdym sudo i dajemy 30 sek zanim przejdzie w stan uśpienia, by kolejne szybkie sudo nie czekało 2 sek na wybudzenie czytnika.
-Plik: `/etc/udev/rules.d/99-elan-fingerprint.rules`
-```text
-SUBSYSTEM=="usb", ATTR{idVendor}=="04f3", ATTR{idProduct}=="0c8c", ATTR{power/control}="auto", ATTR{power/autosuspend}="30"
-```
-## 3. Konfiguracja PAM (The Double-Check)
-
-Zwiększamy liczbę prób do 2, aby PAM automatycznie "skonsumował" pierwszy błąd sprzętowy i od razu dał użytkownikowi drugą, czystą szansę na autoryzację.
-Plik: `/etc/pam.d/common-auth`
-```Plaintext
-
-auth [success=2 default=ignore] pam_fprintd.so max-tries=2 timeout=10
-auth [success=1 default=ignore] pam_unix.so nullok try_first_pass
-```
-## 4. Automatyzacja
-
-Pełny skrypt wdrażający te poprawki znajduje się tutaj:   
-👉 [Pobierz / Download](../skrypty/thinkpad-fingerprint-fix.sh)
+Nowoczesna architektura (Meteor Lake) i magistrala USB w tym modelu reagują bardzo negatywnie na próby "oszukiwania" zasilania i sesji. Agresywne zmiany mogą doprowadzić do **pętli błędów autoryzacji**, zablokowania `sudo` i konieczności naprawy systemu z poziomu terminala ratunkowego. Lepiej zaakceptować drobne specyfiki hardware'u niż ryzykować stabilność pracy.
 
 ---
 
-## EN: Fingerprint Reader Stability Fix
-## 1. The Issue: Ghost Error / Ghost Login
+## PL: Optymalizacja Czytnika - Wersja Stabilna
 
-On Meteor Lake ThinkPads, aggressive USB power management causes the ELAN reader to send a "glitch" signal during the first poll. This leads to an instant "Match Failed" error or a dangerous "Ghost Login" (bypass).
+### ## 1. Stan faktyczny:
+* Czytnik ELAN w modelu E16 Gen 2 ma tendencję do "pierwszego błędu" (Cold Boot Bug) po starcie systemu lub wybudzeniu. 
+* Środowisko MATE nie odświeża dynamicznie modułu biometrii po otwarciu klapy.
 
-## 2. Hardware Fix (Udev)
+### ## 2. Rozwiązanie (Nieinwazyjne):
+Zamiast skryptów, stosujemy jedynie delikatną korektę w module PAM, która pozwala systemowi na "drugą szansę" przy odczycie palca, bez przerywania sesji.
 
-Instead of forcing power "Always ON", we allow the system to suspend the device and handle the glitch via PAM retry logic.
-File: `/etc/udev/rules.d/99-elan-fingerprint.rules`
-```Plaintext
+**Krok 1: Przywrócenie standardu**
+W terminalu wykonaj:
+`sudo pam-auth-update`
+*(Upewnij się, że gwiazdka [*] jest przy 'Fingerprint authentication', zatwierdź OK).*
 
-SUBSYSTEM=="usb", ATTR{idVendor}=="04f3", ATTR{idProduct}=="0c8c", ATTR{power/control}="auto", ATTR{power/autosuspend}="30"
-```
-## 3. Software Fix (PAM Hardening)
+**Krok 2: Korekta 'Drugiej Szansy'**
+Edytuj plik: `sudo xed /etc/pam.d/common-auth`
+Znajdź linię `pam_fprintd.so` i dopisz na jej końcu `max-tries=2`.
 
-Set max-tries=2 to allow PAM to automatically "consume" the initial hardware glitch, providing a clean second prompt for the user.
-File: `/etc/pam.d/common-auth`
-```Plaintext
+Przykład:
+`auth [success=2 default=ignore] pam_fprintd.so max-tries=2`
 
-auth [success=2 default=ignore] pam_fprintd.so max-tries=2 timeout=10
-auth [success=1 default=ignore] pam_unix.so nullok try_first_pass
-```
+### ## 3. Dlaczego to wystarczy?
+* **Brak lagów:** Rezygnacja z reguł Udev `autosuspend` sprawia, że system zarządza energią domyślnie (zazwyczaj trzyma czytnik aktywny), co eliminuje 2-sekundowe opóźnienia w terminalu.
+* **Bezpieczeństwo:** Nawet jeśli po otwarciu klapy czytnik nie zareaguje natychmiast, naciśnięcie [Enter] lub ponowne przyłożenie palca zadziała bez mignięć ekranu i ryzyka zawieszenia sesji.
+
+---
+
+## EN: Fingerprint Reader - Stable Version
+
+### ## 1. Current State:
+* The ELAN reader on E16 Gen 2 hardware exhibits a "first poll failure" after boot or resume (Meteor Lake quirk).
+* MATE Desktop is rigid with its screensaver and doesn't always re-poll the USB bus dynamically.
+
+### ## 2. Solution (Safe Method):
+Avoid automation scripts. Use a simple PAM adjustment to allow a seamless second attempt.
+
+**Step 1: Reset to Defaults**
+Run: `sudo pam-auth-update`
+*(Ensure 'Fingerprint authentication' is checked).*
+
+**Step 2: The 'Second Chance' Tweak**
+Edit: `sudo xed /etc/pam.d/common-auth`
+Append `max-tries=2` to the `pam_fprintd.so` line.
+
+### ## 3. Conclusion:
+Keep it simple. On this hardware, a manual second tap or a quick [Enter] is far superior to complex scripts that cause screen flickering or authorization loops.

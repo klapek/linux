@@ -34,6 +34,9 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
+* **[PL/EN] [ThinkPad E16 Gen 2 (Meteor Lake) - Fingerprint & PAM Stability](./fixy/thinkpad-fprint.md)**  
+ *Stabilizacja czytnika linii papilarnych i naprawa Ghost Error*
+
 * **[PL/EN] [Cassette Digitalization](./fixy/kaseta-mp3.md)**   
 ✅ *Archiwizacja kaset magnetofonowych (Sony Walkman + USB UGREEN) na Linuksie.*
 

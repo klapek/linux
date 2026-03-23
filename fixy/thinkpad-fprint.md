@@ -14,8 +14,7 @@ Nowoczesna architektura (Meteor Lake) i magistrala USB w tym modelu reagują bar
 ## PL: Optymalizacja Czytnika - Wersja Stabilna
 
 ### ## 1. Stan faktyczny:
-* Czytnik ELAN w modelu E16 Gen 2 ma tendencję do "pierwszego błędu" (Cold Boot Bug) po starcie systemu lub wybudzeniu. 
-* Środowisko MATE nie odświeża dynamicznie modułu biometrii po otwarciu klapy.
+* Czytnik ELAN w modelu E16 Gen 2 ma tendencję do "pierwszego błędu" (Cold Boot Bug) po starcie systemu lub wybudzeniu. Sytuacja przy pierwszym zapytaniu (np. `sudo`) czytnik wysyła błędny sygnał. Skutkuje to albo natychmiastowym błędem, albo (rzadziej) niebezpiecznym autologowaniem bez dotknięcia skanera. Na architekturze Meteor Lake, czytnik przy zimnym starcie zawsze zgłasza błąd inicjalizacji (Ghost Error). 
 
 ### ## 2. Rozwiązanie (Nieinwazyjne):
 Zamiast skryptów, stosujemy jedynie delikatną korektę w module PAM, która pozwala systemowi na "drugą szansę" przy odczycie palca, bez przerywania sesji.
@@ -34,7 +33,7 @@ Przykład:
 
 ### ## 3. Dlaczego to wystarczy?
 * **Brak lagów:** Rezygnacja z reguł Udev `autosuspend` sprawia, że system zarządza energią domyślnie (zazwyczaj trzyma czytnik aktywny), co eliminuje 2-sekundowe opóźnienia w terminalu.
-* **Bezpieczeństwo:** Nawet jeśli po otwarciu klapy czytnik nie zareaguje natychmiast, naciśnięcie [Enter] lub ponowne przyłożenie palca zadziała bez mignięć ekranu i ryzyka zawieszenia sesji.
+* **Bezpieczeństwo:** Eliminujemy randomowe autologowanie `sudo` poprzez drugą szansę opcji `max-tries=2`.
 
 ---
 
@@ -56,4 +55,4 @@ Edit: `sudo xed /etc/pam.d/common-auth`
 Append `max-tries=2` to the `pam_fprintd.so` line.
 
 ### ## 3. Conclusion:
-Keep it simple. On this hardware, a manual second tap or a quick [Enter] is far superior to complex scripts that cause screen flickering or authorization loops.
+Keep it simple. On this hardware set `max-tries=2` to allow PAM to automatically "consume" the initial hardware glitch, providing a clean second prompt for the user. loops.

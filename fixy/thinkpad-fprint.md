@@ -35,6 +35,19 @@ Przykład:
 * **Brak lagów:** Rezygnacja z reguł Udev `autosuspend` sprawia, że system zarządza energią domyślnie (zazwyczaj trzyma czytnik aktywny), co eliminuje 2-sekundowe opóźnienia w terminalu.
 * **Bezpieczeństwo:** Eliminujemy randomowe autologowanie `sudo` poprzez drugą szansę opcji `max-tries=2`.
 
+#### 4: Rozgrzewka Czytnika (Cicha Inicjalizacja)
+Jeśli mimo poprawek PAM, aplikacje w GUI (np. Menadżer aktualizacji) przy pierwszym uruchomieniu autologuje zamiast palca, zastosuj "rozgrzewkę" w tle. Pozwala to zużyć ten pierwszy, błędny odczyt (Cold Boot Bug) zanim w ogóle dotkniesz czytnika.
+
+1. Stwórz skrypt `~/skrypty/fingerprint-warmup.sh`:
+```bash
+   #!/bin/bash
+   # Wymuszenie pierwszej, błędnej próby w tle (rozgrzewka hardware'u)
+   timeout 0.5s fprintd-verify > /dev/null 2>&1
+```
+2. Dodaj go do Programów startowych MATE (Startup Applications).
+
+3. Efekt: Po zalogowaniu system "puka" do czytnika. Gdy Ty później otwierasz GUI, czytnik jest już w trybie "drugiej szansy" i od razu prosi o palec i faktycznie czeka ąz go przyłożysz.
+
 ---
 
 ## EN: Fingerprint Reader - Stable Version
@@ -56,3 +69,22 @@ Append `max-tries=2` to the `pam_fprintd.so` line.
 
 ### 3. Conclusion:
 Keep it simple. On this hardware set `max-tries=2` to allow PAM to automatically "consume" the initial hardware glitch, providing a clean second prompt for the user. loops.
+
+### 4. Pro-Tip: The Warmup Hack (Silent Background Init)
+**Status:** Recommended for GUI (Update Manager / Synaptic) consistency.
+
+EN: Reader Warmup (Silent Background Init)
+
+If GUI apps (like Update Manager) still goes without password on the first try despite PAM tweaks, use this silent background "warmup". It exhausts the initial "Cold Boot Bug" poll before you even interact with the UI.
+
+1. Create a script `~/skrypty/fingerprint-warmup.sh:`
+    
+```bash
+
+    #!/bin/bash
+    # Trigger the initial failed poll in the background
+    timeout 0.5s fprintd-verify > /dev/null 2>&1
+```
+2.  Add it to MATE Startup Applications.
+
+3.  Result: Upon login, the system "pokes" the hardware. When you later trigger a GUI auth, the reader is already in its stable "second-poll" state and prompts for a finger immediately and wait for your finger.

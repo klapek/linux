@@ -35,18 +35,25 @@ Przykład:
 * **Brak lagów:** Rezygnacja z reguł Udev `autosuspend` sprawia, że system zarządza energią domyślnie (zazwyczaj trzyma czytnik aktywny), co eliminuje 2-sekundowe opóźnienia w terminalu.
 * **Bezpieczeństwo:** Eliminujemy randomowe autologowanie `sudo` poprzez drugą szansę opcji `max-tries=2`.
 
-#### 4: Rozgrzewka Czytnika (Cicha Inicjalizacja)
-Jeśli mimo poprawek PAM, aplikacje w GUI (np. Menadżer aktualizacji) przy pierwszym uruchomieniu autologuje zamiast palca, zastosuj "rozgrzewkę" w tle. Pozwala to zużyć ten pierwszy, błędny odczyt (Cold Boot Bug) zanim w ogóle dotkniesz czytnika.
+### 4: Cichy Start Hardware'u (Metoda Schludna)
+Aby uniknąć błędu "pierwszego odczytu" w GUI i jednocześnie nie pokazywać okienek autoryzacji przy starcie, stosujemy ciche "puknięcie" i restart demona. To czyści błędy inicjalizacji USB i przygotowuje czytnik na pierwsze realne dotknięcie.
 
-1. Stwórz skrypt `~/skrypty/fingerprint-warmup.sh`:
+1. Skrypt `~/skrypty/fingerprint-warmup.sh`:
 ```bash
    #!/bin/bash
-   # Wymuszenie pierwszej, błędnej próby w tle (rozgrzewka hardware'u)
+   # 1. Czekamy na stabilizację sesji pulpitu (USB Ready)
+   sleep 5
+
+   # 2. Budzimy hardware przez zapytanie o bazę danych (nie wymaga hasła/palca)
+   fprintd-list $USER > /dev/null 2>&1
+
+   # 3. Zużywamy pierwszy, potencjalnie błędny odczyt sesji
    timeout 0.5s fprintd-verify > /dev/null 2>&1
 ```
-2. Dodaj go do Programów startowych MATE (Startup Applications).
 
-3. Efekt: Po zalogowaniu system "puka" do czytnika. Gdy Ty później otwierasz GUI, czytnik jest już w trybie "drugiej szansy" i od razu prosi o palec i faktycznie czeka ąz go przyłożysz.
+2. Dodaj go do Programów startowych MATE.
+
+3. Zaleta: Całkowicie niewidoczne dla użytkownika, nie wymaga uprawnień roota, rozwiązuje problem "błędnego hasła lub autologowania bez palca" w Menadżerze Aktualizacji i innych aplikacjach GUI.
 
 ---
 
@@ -70,21 +77,27 @@ Append `max-tries=2` to the `pam_fprintd.so` line.
 ### 3. Conclusion:
 Keep it simple. On this hardware set `max-tries=2` to allow PAM to automatically "consume" the initial hardware glitch, providing a clean second prompt for the user. loops.
 
-### 4. Pro-Tip: The Warmup Hack (Silent Background Init)
-**Status:** Recommended for GUI (Update Manager / Synaptic) consistency.
+###  4. Pro-Tip: The PolicyKit Poke (GUI Cold-Start Fix)
+**Status:** Best for Meteor Lake hardware stability.
 
-EN: Reader Warmup (Silent Background Init)
+EN: The Clean Hardware Kickstart (Stealth Warmup)
 
-If GUI apps (like Update Manager) still goes without password on the first try despite PAM tweaks, use this silent background "warmup". It exhausts the initial "Cold Boot Bug" poll before you even interact with the UI.
+The most elegant way to bypass the Cold Boot Bug without flashing GUI windows. It wakes the USB hardware and resets the daemon state for a fresh start.
 
 1. Create a script `~/skrypty/fingerprint-warmup.sh:`
     
 ```bash
 
-    #!/bin/bash
-    # Trigger the initial failed poll in the background
-    timeout 0.5s fprintd-verify > /dev/null 2>&1
+      #!/bin/bash
+   # 1. Czekamy na stabilizację sesji pulpitu (USB Ready)
+   sleep 5
+
+   # 2. Budzimy hardware przez zapytanie o bazę danych (nie wymaga hasła/palca)
+   fprintd-list $USER > /dev/null 2>&1
+
+   # 3. Zużywamy pierwszy, potencjalnie błędny odczyt sesji
+   timeout 0.5s fprintd-verify > /dev/null 2>&1
 ```
 2.  Add it to MATE Startup Applications.
 
-3.  Result: Upon login, the system "pokes" the hardware. When you later trigger a GUI auth, the reader is already in its stable "second-poll" state and prompts for a finger immediately and wait for your finger.
+3. Benefit: 100% transparent to the user, runs in user-space (no sudo needed), and fixes the "reverts to password or autologin without fingerprint" issue in Update Manager/GUI apps.

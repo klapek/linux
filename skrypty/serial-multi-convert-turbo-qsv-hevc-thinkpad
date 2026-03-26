@@ -2,7 +2,8 @@
 # ThinkPad E16 G2 - D-Turbo (Samsung-Ready)
 # Fix: Syntax & Exit Status Logic
 
-QUALITY="25"
+# 18-30; 25=standard; 20=high 
+QUALITY="27"
 MODE="1"
 
 for input in "$@"; do
@@ -14,13 +15,14 @@ for input in "$@"; do
 
     notify-send -i "dialog-ok" "ThinkPad D-Turbo" "Start: $(basename "$file")"
 
-    # --- KONFIGURACJA LINII FFMPEG ---
+ # --- KONFIGURACJA LINII FFMPEG ---
     if [ "$MODE" == "1" ]; then
         ffmpeg -init_hw_device vaapi=intel:/dev/dri/renderD128,extra_hw_frames=128 -hwaccel vaapi -hwaccel_output_format vaapi \
         -i "$file" \
         -map 0:v:0 \
         -map 0:a:m:language:pol? -map 0:a:0? \
         -map 0:s:m:language:pol? \
+        -vf "scale_vaapi=w=-2:h=720" \
         -c:v hevc_vaapi -qp "$QUALITY" -async_depth 2 \
         -c:a copy \
         -c:s copy \
@@ -47,7 +49,7 @@ for input in "$@"; do
         echo -e "\n\e[32m[SUKCES]\e[0m Proces zakończony w $TIME_DISPLAY."
     else
         # --- CZYSZCZENIE I LOGOWANIE ---
-        [ -f "$output" ] && rm -f "$output"
+      #  [ -f "$output" ] && rm -f "$output"
         
         echo "$(date '+%Y-%m-%d %H:%M:%S') - BŁĄD: $(basename "$file")" >> bledy_turbo.log
         

@@ -23,13 +23,13 @@
     ```bash
     pactl unload-module module-loopback
     ```
-* **pavucontrol:** Po rozpoczęciu nagrywania w Audacity, w zakładce **Nagrywanie** wybierz jako źródło: `KT USB Audio Mono`.  
+* **pavucontrol:** Po rozpoczęciu nagrywania w Audacity, w zakładce **Nagrywanie** wybierz jako źródło: `KT USB Audio Mono` lub po prostu `pulse` (nie zawsze widać KT USB).  
 
 **EN:** * **Terminal:** Unload audio bridges before recording:  
     ```bash
     pactl unload-module module-loopback
     ```
-* **pavucontrol:** Once recording starts in Audacity, go to the **Recording** tab and set the source to: `KT USB Audio Mono`.  
+* **pavucontrol:** Once recording starts in Audacity, go to the **Recording** tab and set the source to: `KT USB Audio Mono` or just `pulse`.  
 
 ---
 
@@ -37,7 +37,8 @@
 
 **PL:** * **Host:** ALSA  
 * **Urządzenie nagrywania:** `pulse` lub `default`  
-* **Kanały:** 1 (Mono) — *Karty USB typu 'dongle' natywnie obsługują tylko 1 kanał wejściowy.* * **Głośność wejściowa:** Ustaw na ok. **25%** (zapobiega to przesterowaniu/clippingowi). Szczyty fali powinny oscylować wokół **-6 dB**.  
+* **Kanały:** 1 (Mono) — *Karty USB typu 'dongle' natywnie obsługują tylko 1 kanał wejściowy.* * **Głośność wejściowa:** Ustaw na ok. **25%** (zapobiega to przesterowaniu/clippingowi). Szczyty fali powinny oscylować wokół **-6 dB** (nie zawsze da radę ustawić poprzez Audacity - w takiej sytuacji ustaw głośność mikrofonu dla `KT USB Audio` w ustawieniach dźwięku lub z konsoli w `AlsaMixer` do 40%.).  
+**Odtwarzanie:** Z automatu ustawia na `KT USB Audio - Headphones` i nic nie słychać ;) - trzeba przestawić wyjście dźwięku na `Meteor Lake` w preferencjach dźwięku MATE.
 
 **EN:** * **Host:** ALSA  
 * **Recording Device:** `pulse` or `default`  

@@ -5,7 +5,7 @@
 
 ---
 
-## 🛠️ 1. Hardware Setup / Konfiguracja Sprzętowa  
+## 🛠️  1. Hardware Setup / Konfiguracja Sprzętowa  
 
 **PL:** * **Interfejs:** Użyj karty USB UGREEN (chipset KTMicro). Jest izolowana od szumów płyty głównej.  
 * **Połączenie:** Walkman (wyjście słuchawkowe) ➔ Kabel Jack-Jack 3.5mm ➔ Karta USB (wejście mikrofonowe - różowe).  
@@ -17,7 +17,7 @@
 
 ---
 
-## ⚙️ 2. Linux System Configuration / Konfiguracja Systemu  
+## ⚙️  2. Linux System Configuration / Konfiguracja Systemu  
 
 **PL:** * **Terminal:** Wyłącz systemowe mostki audio przed nagrywaniem:  
     ```bash
@@ -33,7 +33,7 @@
 
 ---
 
-## 🎙️ 3. Audacity Settings / Ustawienia Audacity  
+## 🎙️  3. Audacity Settings / Ustawienia Audacity  
 
 **PL:** * **Host:** ALSA  
 * **Urządzenie nagrywania:** `pulse` lub `default`  
@@ -46,7 +46,7 @@
 
 ---
 
-## 💾 4. Archiving Strategy / Strategia Archiwizacji  
+## 💾  4. Archiving Strategy / Strategia Archiwizacji  
 
 **PL (Zasada Master & Proxy):** 1.  **MASTER (Archiwum):** Eksportuj do formatu **FLAC** (bezstratny).  
     * *Dlaczego:* 50% mniejszy niż WAV, 0% straty jakości. Idealny do późniejszej obróbki (odszumiania).  
@@ -62,7 +62,44 @@
 
 ---
 
-## 📝 5. Quick Workflow Summary / Szybka Ściąga  
+## 🎵  5. Normalizacja Poziomu Głośności (Cassette-to-Digital)
+
+**Cel (PL):**
+Ujednolicenie głośności nagrań z kaset magnetofonowych z istniejącą biblioteką cyfrową (YouTube-rips, CD). Zapewnienie komfortu odsłuchu w środowisku o wysokim szumie tła (samochód).
+
+**Procedura (PL):**
+1. Nagrywanie surowego sygnału (Raw) z pikiem w okolicy -6 dB (strefa zielona).
+2. Po zakończeniu nagrania: `Efekt -> Głośność i kompresja -> Normalizuj`.
+3. Ustawienie szczytowej amplitudy na: `-3.0 dB`.
+
+**Dlaczego -3.0 dB? (PL):**
+- Zgodność: Większość plików z YouTube/Downloaderów ma piki w zakresie -1 do -4 dB.
+- Headroom: Pozostawia 3 dB marginesu na błędy kwantyzacji podczas kompresji do MP3.
+- Dynamika: Chroni przed cyfrowym przesterowaniem (clipping) przy jednoczesnym podbiciu odczuwalnej głośności.
+
+---
+
+**Objective (EN):**
+Standardizing loudness levels for cassette tape rips to match existing digital libraries (YouTube, CD). Ensuring consistent playback volume in high-noise environments (e.g., car cabin).
+
+**Procedure (EN):**
+1. Record raw signal with peaks around -6 dB (Green zone).
+2. Post-recording: `Effect -> Volume and Compression -> Normalize`.
+3. Set Peak Amplitude to: `-3.0 dB`.
+
+**Why -3.0 dB? (EN):**
+- Compatibility: Matches the average peak levels of YouTube-sourced MP3s (-1 to -4 dB).
+- Headroom: Provides a 3 dB safety margin to prevent inter-sample peaks during MP3 encoding.
+- Fidelity: Enhances perceived loudness without risking digital clipping or flat-lining the dynamics.
+
+**Technical (Cross-Language):**
+- Format: 32-bit float (internal Audacity processing).
+- Target Peak: -3.0 dBFS.
+- Dithering: Not required if exporting to 24-bit/32-bit FLAC.
+
+---
+
+## 📝  6. Quick Workflow Summary / Szybka Ściąga  
 
 **PL:** 1. Wepnij kartę, podłącz Walkmana.  
 2. Odpal Audacity, ustaw głośność na **25%**.  

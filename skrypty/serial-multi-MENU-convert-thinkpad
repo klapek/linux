@@ -81,7 +81,7 @@ for file in "${FILES[@]}"; do
     [ -e "$file" ] || continue
     filename=$(basename "$file")
     # Poprawka: Wyjście mkv, aby napisy SRT mogły tam "wejść"
-    output="convert/${filename%.*}-720p.mkv"
+    output="convert/${filename%.*}.x265.HEVC-AiP.mkv"
     
     echo -e "\n\e[32mPrzetwarzanie (Tryb $MODE): $filename\e[0m"
     notify "Start: $filename"

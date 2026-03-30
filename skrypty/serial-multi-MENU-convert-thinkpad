@@ -21,6 +21,7 @@ echo "--- Start sesji: $(date +'%Y-%m-%d %H:%M:%S') ---" >> "$LOG_FILE"
 # --- MENU INTERAKTYWNE ---
 clear
 echo -e "\e[1m\e[34m=== SERIAL MULTI-MENU CONVERT (ThinkPad Edition) ===\e[0m"
+
 echo -e "\n\e[1mKROK 1: Wybierz tryb wydajności:\e[0m"
 echo "1) Turbo (Pełne GPU - najszybszy) 🚀"
 echo "2) Hybryda (CPU Dec + GPU Enc - najbezpieczniejszy) 🟢"
@@ -39,7 +40,7 @@ if [ "$CFG_TYPE" == "1" ]; then
     QUALITY=$QUALITY_DEF
     RES="720"
     SUBS="none"
-    AUDIO="copy"
+    AUDIO="pol" # Zmienione na polskie (najczęstszy wybór)
 else
     read -p "Jakość [18-30, domyślnie 25]: " QUALITY; QUALITY=${QUALITY:-25}
     echo -e "\nRozdzielczość:\n1) 720p 🟢\n2) Oryginalna"
@@ -54,8 +55,14 @@ else
 fi
 
 # --- PRZYGOTOWANIE FILTRÓW I MAPOWANIA ---
-V_FILTER=""
-[ "$RES" == "720" ] && V_FILTER="-vf scale_vaapi=w=-2:h=720"
+# Poprawka: V_FILTER teraz zależy od tego, czy używamy VAAPI czy Software
+if [ "$RES" == "720" ]; then
+    V_FILTER_VAAPI="-vf scale_vaapi=w=-2:h=720"
+    V_FILTER_SW="-vf scale=-2:720"
+else
+    V_FILTER_VAAPI=""
+    V_FILTER_SW=""
+fi
 
 case $AUDIO in
     "pol") A_MAP="-map 0:a:m:language:pol? -map 0:a:0?" ;;
@@ -67,41 +74,52 @@ esac
 S_MAP=""
 [ "$SUBS" != "none" ] && S_MAP="-map 0:s:m:language:$SUBS?"
 
-# --- PĘTLA PRZETWARZANIA ---
-case $MODE in
-    1) # --- TURBO (Full VAAPI) ---
-        ffmpeg -init_hw_device vaapi=intel:/dev/dri/renderD128,extra_hw_frames=128 -hwaccel vaapi -hwaccel_output_format vaapi \
-        -i "$file" -map 0:v:0 $A_MAP $S_MAP $V_FILTER \
-        -c:v hevc_vaapi -qp "$QUALITY" -async_depth 2 \
-        -c:a copy -c:s srt -max_muxing_queue_size 8192 -y "$output" < /dev/null 2>/dev/null
-        ;;
+# --- PĘTLA GŁÓWNA ---
+mkdir -p "convert"
 
-    2) # --- HYBRYDA (CPU Dec -> GPU Enc) ---
-        # Brak -hwaccel na początku pozwala CPU na swobodne dekodowanie
-        ffmpeg -init_hw_device vaapi=intel:/dev/dri/renderD128 -filter_hw_device vaapi \
-        -i "$file" -map 0:v:0 $A_MAP $S_MAP \
-        -vf "format=nv12,hwupload,scale_vaapi=w=-2:h=$([[ "$RES" == "720" ]] && echo "720" || echo "ih")" \
-        -c:v hevc_vaapi -qp "$QUALITY" \
-        -c:a copy -c:s srt -y "$output" < /dev/null 2>/dev/null
-        ;;
+for file in "${FILES[@]}"; do
+    [ -e "$file" ] || continue
+    filename=$(basename "$file")
+    # Poprawka: Wyjście mkv, aby napisy SRT mogły tam "wejść"
+    output="convert/${filename%.*}-720p.mkv"
+    
+    echo -e "\n\e[32mPrzetwarzanie (Tryb $MODE): $filename\e[0m"
+    notify "Start: $filename"
 
-    3) # --- SZYBKI (Oryginalny Chirurg - x30) ---
-        # To jest Twoja sprawdzona metoda: proste mapowanie i vaapi
-        ffmpeg -vaapi_device /dev/dri/renderD128 -i "$file" \
-        -map 0:v:0 $A_MAP $S_MAP $V_FILTER \
-        -c:v hevc_vaapi -qp "$QUALITY" \
-        -c:a copy -c:s srt -y "$output" < /dev/null 2>/dev/null
-        ;;
+    case $MODE in
+        1) # --- TURBO (Full VAAPI) ---
+            ffmpeg -init_hw_device vaapi=intel:/dev/dri/renderD128,extra_hw_frames=128 -hwaccel vaapi -hwaccel_output_format vaapi \
+            -i "$file" -map 0:v:0 $A_MAP $S_MAP $V_FILTER_VAAPI \
+            -c:v hevc_vaapi -qp "$QUALITY" -async_depth 2 \
+            -c:a copy -c:s srt -max_muxing_queue_size 8192 -y "$output" < /dev/null 2>/dev/null
+            ;;
 
-    4) # --- SOFT (Software x265) ---
-        [ "$RES" == "720" ] && SW_V="-vf scale=-2:720" || SW_V=""
-        ffmpeg -i "$file" -map 0:v:0 $A_MAP $S_MAP $SW_V \
-        -c:v libx265 -crf "$QUALITY" -preset slow \
-        -c:a copy -c:s srt -y "$output" < /dev/null 2>/dev/null
-        ;;
-esac
+        2) # --- HYBRYDA (CPU Dec -> GPU Enc) ---
+            # Poprawka filtra: musi zawierać format=nv12 i hwupload
+            HYBRID_V="-vf format=nv12,hwupload,scale_vaapi=w=-2:h=720"
+            [ "$RES" == "orig" ] && HYBRID_V="-vf format=nv12,hwupload"
+            
+            ffmpeg -init_hw_device vaapi=intel:/dev/dri/renderD128 -filter_hw_device vaapi \
+            -i "$file" -map 0:v:0 $A_MAP $S_MAP $HYBRID_V \
+            -c:v hevc_vaapi -qp "$QUALITY" \
+            -c:a copy -c:s srt -y "$output" < /dev/null 2>/dev/null
+            ;;
 
-# Sprawdzenie wyniku i logowanie
+        3) # --- SZYBKI (Oryginalny Szybki - x30) ---
+            ffmpeg -vaapi_device /dev/dri/renderD128 -i "$file" \
+            -map 0:v:0 $A_MAP $S_MAP $V_FILTER_VAAPI \
+            -c:v hevc_vaapi -qp "$QUALITY" \
+            -c:a copy -c:s srt -y "$output" < /dev/null 2>/dev/null
+            ;;
+
+        4) # --- SOFT (Software x265) ---
+            ffmpeg -i "$file" -map 0:v:0 $A_MAP $S_MAP $V_FILTER_SW \
+            -c:v libx265 -crf "$QUALITY" -preset slow \
+            -c:a copy -c:s srt -y "$output" < /dev/null 2>/dev/null
+            ;;
+    esac
+
+    # Sprawdzenie wyniku i logowanie
     if [ $? -eq 0 ] && [ -f "$output" ]; then
         echo -e "\e[32m[SUKCES]\e[0m $filename"
         echo "$(date +'%H:%M:%S') - MODE $MODE - SUKCES: $filename" >> "$LOG_FILE"
@@ -110,11 +128,10 @@ esac
         echo "$(date +'%H:%M:%S') - MODE $MODE - BŁĄD: $filename" >> "$LOG_FILE"
     fi
 done
+
 # --- KONIEC ---
-notify "Zakończono! Sprawdź logi w $LOG_FILE 🟢"
+notify "Zakończono konwersję! 🟢"
 echo -e "\n\e[1m\e[34mPrzetwarzanie zakończone.\e[0m"
-echo -e "Logi zapisano w: \e[1m$LOG_FILE\e[0m"
-echo -e "\nNaciśnij [ENTER], aby zamknąć to okno..."
+echo -e "Logi: \e[1m$LOG_FILE\e[0m"
+echo -e "\nNaciśnij [ENTER], aby zamknąć..."
 read -r
-
-

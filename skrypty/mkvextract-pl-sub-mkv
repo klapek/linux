@@ -1,35 +1,40 @@
 #!/bin/bash
 
-# Powiadomienie o rozpoczęciu - ikona 'dialog-information' jest standardem
-notify-send "Skrypt MKV" "Rozpoczynam przetwarzanie zaznaczonych plików..." -i dialog-information
+notify-send "Skrypt MKV" "Strategia: Wybieram największą polską ścieżkę napisów..." -i dialog-information
 
 count=0
-total=$#
 
 for filename in "$@"
 do
     if [[ "$filename" == *.mkv ]]; then
         ((count++))
         
-        # Pobieramy ID polskich napisów
-        sub_id=$(mkvmerge -J "$filename" | jq -r '.tracks[] | select(.type=="subtitles") | select(.properties.language=="pol").id' | head -n 1) 
-        
-        if [[ -n $sub_id ]]; then
-            # -s $sub_id wybiera tylko te napisy
-            # --default-track $sub_id:1 ustawia je jako domyślne
-            subs="-s $sub_id --default-track $sub_id:1"
+        # Pobieramy ID ścieżki polskiej, która ma największy rozmiar (properties.number_of_bytes)
+        # Sortujemy malejąco po rozmiarze i bierzemy pierwszy wynik
+        best_sub_id=$(mkvmerge -J "$filename" | jq -r '
+            [.tracks[] | select(.type=="subtitles" and .properties.language=="pol")] 
+            | sort_by(.properties.number_of_bytes) 
+            | reverse 
+            | .[0].id'
+        )
+
+        # Sprawdzamy czy jq nie zwróciło null lub pustego ciągu
+        if [[ -n "$best_sub_id" && "$best_sub_id" != "null" ]]; then
+            # -s $best_sub_id zostawia TYLKO tę jedną ścieżkę
+            # Czyścimy flagi i ustawiamy jako default/forced=0 (na wszelki wypadek)
+            subs="-s $best_sub_id --forced-track $best_sub_id:0 --default-track $best_sub_id:1"
         else
+            # Jeśli brak polskich napisów, wycinamy wszystkie napisy
             subs="-S"
         fi
         
         mkvmerge $subs -o "${filename%.mkv}-PLSUB.mkv" "$filename" > /dev/null 2>&1
-        echo "V Przetworzono: $filename"
+        echo "V Przetworzono: $filename (Wybrano największe ID: $best_sub_id)"
     fi
 done
 
-# Powiadomienie końcowe - używamy 'task-complete' lub 'dialog-ok'
 if [ $count -gt 0 ]; then
-    notify-send "Skrypt MKV -> Zakończono pomyślnie" "Przetworzono plików: $count" -i dialog-information
+    notify-send "Skrypt MKV" "Gotowe. Zostawiono tylko najbogatszą ścieżkę PL." -i dialog-information
 else
-    notify-send "Błąd" "Nie znaleziono odpowiednich plików .mkv do przetworzenia." -i dialog-error
+    notify-send "Błąd" "Nie znaleziono plików .mkv." -i dialog-error
 fi

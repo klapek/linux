@@ -34,6 +34,33 @@ echo -n "rescan" > /sys/bus/serio/devices/serio0/drvctl
 ```bash
 sudo chmod +x /usr/local/bin/fix-keyboard.sh
 ```
+
+⚙️  4a. (UPDATE) Naprawa blokady klawiszy po użyciu GRUB (Kernel 6.8.0-107)
+
+   Symptom: Klawiatura działa przy starcie bezczynnym, ale blokuje się po naciśnięciu Enter w GRUB.
+
+    Przyczyna: Konflikt przerwań (IRQ 1) podczas przekazywania kontrolera z BIOS do jądra.
+
+    Fix: Zmiana metody resetu ze słabego rescan na agresywny unbind/bind sterownika atkbd.
+
+```bash
+#!/bin/bash
+# Wymuszenie twardego resetu sterownika klawiatury
+# 1. Odpięcie sterownika atkbd od urządzenia serio0
+echo -n "serio0" > /sys/bus/serio/drivers/atkbd/unbind
+sleep 0.2
+# 2. Ponowne przypięcie (to wymusza pełną inicjalizację rejestrów)
+echo -n "serio0" > /sys/bus/serio/drivers/atkbd/bind
+```
+
+Dodaj parametr GRUB "i8042.noloop"
+
+W jądrze 6.8 ten parametr pomaga uniknąć zapętlenia przy sprawdzaniu kontrolera po naciśnięciu klawisza w BIOS.
+`sudo xed /etc/default/grub`
+Dodaj go do listy:
+`GRUB_CMDLINE_LINUX_DEFAULT="quiet splash i8042.direct i8042.reset i8042.nomux i8042.nopnp i8042.noloop"`  
+`sudo update-grub`
+
 ⚙️  5. Systemd Service Unit / Jednostka Systemd
 
 Usługa uruchomi skrypt automatycznie na bardzo wczesnym etapie bootowania (zaraz po modułach, ale przed managerem logowania).
@@ -116,6 +143,32 @@ echo -n "rescan" > /sys/bus/serio/devices/serio0/drvctl
 ```bash
 sudo chmod +x /usr/local/bin/fix-keyboard.sh
 ```
+
+⚙️  4a (UPDATE) Keyboard Lockup after GRUB Interaction (Kernel 6.8.0-107)
+
+    Issue: Keyboard works fine on auto-boot but fails after pressing Enter in GRUB.
+
+    Cause: Interrupt conflict (IRQ 1) during the BIOS-to-Kernel handoff.
+
+    Fix: Switching from a soft rescan to a hard unbind/bind of the atkbd driver in the systemd service.
+
+```bash
+#!/bin/bash
+# Wymuszenie twardego resetu sterownika klawiatury
+# 1. Odpięcie sterownika atkbd od urządzenia serio0
+echo -n "serio0" > /sys/bus/serio/drivers/atkbd/unbind
+sleep 0.2
+# 2. Ponowne przypięcie (to wymusza pełną inicjalizację rejestrów)
+echo -n "serio0" > /sys/bus/serio/drivers/atkbd/bind
+```
+
+Add to GRUB "i8042.noloop"
+
+`sudo xed /etc/default/grub`
+Add:
+`GRUB_CMDLINE_LINUX_DEFAULT="quiet splash i8042.direct i8042.reset i8042.nomux i8042.nopnp i8042.noloop"`  
+`sudo update-grub`
+
 ⚙️  5. Systemd Service Unit
 
 This service triggers the script at a very early boot stage (right after modules load, but before the display manager).

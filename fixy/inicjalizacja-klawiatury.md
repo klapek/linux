@@ -3,7 +3,74 @@
 ## PL: Naprawa blokowania klawiszy (P, S, G, K, B, N) i przywrócenie diod LED
 
 **Problem:**  
- Na systemie Mint 22.3 (MATE) z jądrem 6.8.0-101, po zimnym starcie i samoczynnym przejściu przez menu GRUB, wybrane klawisze (P, S, G, K, B, N) przestawały reagować. Standardowy parametr `i8042.dumbkbd` naprawiał klawisze, ale wyłączał diody CapsLock i NumLock.
+ Na systemie Mint 22.3 (MATE) z jądrem od 6.8.0-100, po zimnym starcie i samoczynnym przejściu przez menu GRUB, wybrane klawisze (P, S, G, K, B, N) przestawały reagować. Standardowy parametr `i8042.dumbkbd` naprawiał klawisze, ale wyłączał diody CapsLock i NumLock.
+
+---
+
+## ⚠️ OSTATNIA AKTUALIZACJA / LAST UPDATE .:: START ::.
+
+
+
+## PL: Podsumowanie naprawy klawiatury (Regresja Jądra 6.8)
+
+### 1. Diagnoza (Dlaczego wersja 6.8.0-94?)
+Na podstawie logów systemowych i zgłoszeń na forach (kernel.org / Ubuntu Launchpad), wersje jądra **6.8.0-100 i nowsze** wprowadziły zmiany w zarządzaniu energią (ASPM) oraz obsłudze przerwaniami (IRQ) dla platformy Intel Meteor Lake.
+* **Problem:** Zbyt agresywne timeouty i błędy synchronizacji powodują, że przy "zimnym starcie" (Cold Boot) jądro porzuca inicjalizację kontrolera i8042, uznając go za martwy.
+* **Rozwiązanie:** Powrót do wersji **6.8.0-94**, która wspiera nowy sprzęt, ale nie posiada jeszcze błędnych poprawek w kodzie ACPI/Power Management.
+
+### 2. Konfiguracja GRUB (/etc/default/grub)
+Aby uniknąć loterii przy starcie, wymuszamy ładowanie sprawdzonej wersji jądra i czyścimy zbędne parametry.
+
+**Kroki:**
+1. Edytuj plik: `sudo xed /etc/default/grub`
+2. Ustaw start na sztywno:
+   `GRUB_DEFAULT="Advanced options for Linux Mint 22.3 MATE>Linux Mint 22.3 MATE, with Linux 6.8.0-94-generic"`
+3. Przywróć czyste parametry (diody LED działają tu natywnie):
+   `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"`
+4. Zaktualizuj: `sudo update-grub`
+
+### 3. Wyłączenie zbędnych usług
+Skrypty resetujące (`unbind/bind`) nie są potrzebne na stabilnym jądrze.
+```bash
+sudo systemctl disable keyboard-fix.service
+```
+
+
+
+## EN: Keyboard Regression Fix Summary (Kernel 6.8)
+
+### 1. Diagnosis (Why 6.8.0-94?)
+Community reports and kernel logs indicate that versions **6.8.0-100** and newer introduced regressions in power management (ASPM) and interrupt handling for Intel Meteor Lake platforms.
+
+Issue: Aggressive timeouts during "Cold Boot" cause the kernel to fail the i8042 controller initialization before the hardware is fully ready.
+
+Solution: Reverting to **6.8.0-94**, which provides hardware support without the buggy ACPI/IRQ commits found in later 100+ builds.
+
+### 2. GRUB Configuration (/etc/default/grub)
+Forcing the system to boot from the stable kernel and removing legacy workarounds.
+
+**Steps**:
+Edit config: `sudo xed /etc/default/grub`  
+Pin the stable version:
+ `GRUB_DEFAULT="Advanced options for Linux Mint 22.3 MATE>Linux Mint 22.3 MATE, with Linux 6.8.0-94-generic"`  
+Clean boot parameters (LEDs work natively on this build):
+`GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"`  
+Apply changes: `sudo update-grub`
+
+### 3. Disabling Workarounds
+The unbind/bind reset service is no longer required on the stable kernel.
+```Bash
+
+sudo systemctl disable keyboard-fix.service
+```
+
+Status: Testing Cold Boot (Success so far). LEDs functional.
+
+
+## ⚠️ OSTATNIA AKTUALIZACJA / LAST UPDATE  ::. END .::
+
+---
+
 
 **Diagnoza:**  
 Problem wynika z błędu synchronizacji (race condition) między jądrem a Embedded Controllerem (EC). Próba inicjalizacji diod LED w tym samym momencie co matrycy klawiatury powodowała zawieszenie jednej z linii sygnałowych matrycy.

@@ -9,7 +9,7 @@ else
     FILES=("$@")
 fi
 
-QUALITY_DEF=25
+QUALITY_DEF=26
 LOG_FILE="konwersja.log"
 NOTIFY=$(command -v notify-send)
 
@@ -28,7 +28,7 @@ read -p "Wybór [1-4, domyślnie 3]: " MODE
 MODE=${MODE:-3}
 
 echo -e "\n\e[1mKROK 2: Typ ustawień:\e[0m"
-echo "1) Standard (25, 720p, AUDIO COPY, brak napisów) 🟢"
+echo "1) Standard (26, 720p, AUDIO COPY, brak napisów) 🟢"
 echo "2) Niestandardowy"
 read -p "Wybór [1-2, domyślnie 1]: " CFG_TYPE
 CFG_TYPE=${CFG_TYPE:-1}
@@ -39,7 +39,7 @@ if [ "$CFG_TYPE" == "1" ]; then
     SUBS="none"
     AUDIO="copy"
 else
-    read -p "Jakość [18-30, domyślnie 25]: " QUALITY; QUALITY=${QUALITY:-25}
+    read -p "Jakość [18-30, domyślnie 26]: " QUALITY; QUALITY=${QUALITY:-26}
     echo -e "\nRozdzielczość:\n1) 720p 🟢\n2) Oryginalna"
     read -p "Wybór [1-2, domyślnie 1]: " R_C; R_C=${R_C:-1}
     [ "$R_C" == "1" ] && RES="720" || RES="orig"
@@ -83,25 +83,25 @@ for file in "${FILES[@]}"; do
             ffmpeg -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -hwaccel_output_format vaapi \
             -i "$file" -map 0:v:0 $A_MAP $S_MAP \
             -vf "scale_vaapi=w=-2:h=$([[ "$RES" == "720" ]] && echo "720" || echo "ih")" \
-            -c:v hevc_vaapi -qp "$QUALITY" -c:a copy -c:s srt -y "$output" < /dev/null
+            -c:v hevc_vaapi -qp "$QUALITY" -c:a copy -c:s copy -y "$output" < /dev/null
             ;;
         2) # HYBRYDA
             ffmpeg -vaapi_device /dev/dri/renderD128 -i "$file" \
             -map 0:v:0 $A_MAP $S_MAP \
             -vf "format=nv12,hwupload,scale_vaapi=w=-2:h=$([[ "$RES" == "720" ]] && echo "720" || echo "ih")" \
-            -c:v hevc_vaapi -qp "$QUALITY" -c:a copy -c:s srt -y "$output" < /dev/null
+            -c:v hevc_vaapi -qp "$QUALITY" -c:a copy -c:s copy -y "$output" < /dev/null
             ;;
         3) # SZYBKI (CHIRURG - Wersja z poprawką pamięci)
     ffmpeg -init_hw_device vaapi=intel:/dev/dri/renderD128,extra_hw_frames=64 -hwaccel vaapi -hwaccel_output_format vaapi \
     -i "$file" -map 0:v:0 $A_MAP $S_MAP \
     -vf "scale_vaapi=w=-2:h=$([[ "$RES" == "720" ]] && echo "720" || echo "ih")" \
     -c:v hevc_vaapi -qp "$QUALITY" -compression_level 1 -async_depth 2 \
-    -c:a copy -c:s srt -max_muxing_queue_size 8192 -y "$output" < /dev/null
+    -c:a copy -c:s copy -max_muxing_queue_size 8192 -y "$output" < /dev/null
     ;;
         4) # SOFT
             ffmpeg -i "$file" -map 0:v:0 $A_MAP $S_MAP \
             -vf "$([[ "$RES" == "720" ]] && echo "scale=-2:720" || echo "null")" \
-            -c:v libx265 -crf "$QUALITY" -preset faster -c:a copy -c:s srt -y "$output" < /dev/null
+            -c:v libx265 -crf "$QUALITY" -preset faster -c:a copy -c:s copy -y "$output" < /dev/null
             ;;
     esac
 

@@ -7,6 +7,44 @@
 
 ---
 
+## ⚠️  OSTATNIA AKTUALIZACJA / LAST UPDATE  ⚠️ 
+
+# Kernel 6.8.0-110: The "Stability Milestone" for Meteor Lake
+
+## PL: Przełom w stabilności (Koniec ery protez)
+
+Jądro w wersji **6.8.0-110** wprowadza kluczowe poprawki, które eliminują błędy regresji występujące w serii **-101 do -109**. Dzięki tym zmianom, zaawansowane skrypty naprawcze stają się zbędne.
+
+### Kluczowe poprawki w wersji -110:
+* **Stabilizacja IRQ (Klawiatura):** Naprawiono błędy synchronizacji przerwaniami i8042. Klawiatura inicjalizuje się poprawnie nawet po długim "Zimnym Starcie" (Cold Boot), bez potrzeby stosowania `unbind/bind`.
+* **Zarządzanie energią Meteor Lake:** Poprawiono sterownik `intel_pstate` oraz stany uśpienia. Eliminuje to błędy "zaspanych" magistral USB, przez co czytnik linii papilarnych reaguje natychmiast po otwarciu klapy.
+* **Synchronizacja biometrii:** Dioda czytnika pulsuje od razu po wznowieniu sesji, co oznacza, że hardware jest gotowy bez sztucznego "budzenia" (fingerprint-warmup).
+
+### Co z protezami?
+* **keyboard-fix.service:** Można wyłączyć/usunąć (natywna obsługa jest już stabilna).
+* **fingerprint-warmup.sh:** Można wyłączyć (USB nie wymaga już ręcznej inicjalizacji).
+* **PAM max-tries=2:** **ZALECANE** zostawić dla czystej wygody użytkowania.
+
+---
+
+## EN: Stability Milestone (End of Workarounds)
+
+Kernel version **6.8.0-110** introduces critical fixes that resolve the regressions observed in the **-101 to -109** series. These updates render previous manual workarounds obsolete.
+
+### Key Fixes in v110:
+* **IRQ Stabilization (Keyboard):** Fixed i8042 interrupt synchronization issues. The keyboard initializes correctly even after a "Cold Boot" without requiring `unbind/bind` scripts.
+* **Meteor Lake Power Management:** Improvements to `intel_pstate` and C-states. This fixes "sleepy" USB buses, ensuring the fingerprint sensor is ready immediately upon lid open.
+* **Biometric Sync:** The sensor LED pulses instantly upon session resume, meaning the hardware is ready without the need for manual "warmup" scripts.
+
+### What about the workarounds?
+* **keyboard-fix.service:** Can be disabled/removed (native handling is now stable).
+* **fingerprint-warmup.sh:** Can be disabled (USB no longer requires manual polling to wake up).
+* **PAM max-tries=2:** **RECOMMENDED** to keep for a better user experience (UX).
+
+---
+
+---
+
 ## ⚠️ OSTATNIA AKTUALIZACJA / LAST UPDATE .:: START ::.
 
 

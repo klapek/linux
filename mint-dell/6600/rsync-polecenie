@@ -1,4 +1,4 @@
-rsync -avzP --ignore-errors \
+rsync -avz --info=progress2 --ignore-errors \
 --exclude='.cache/' \
 --exclude='.thumbnails/' \
 --exclude='.local/share/Trash/' \

@@ -1,0 +1,9 @@
+rsync -avzP --ignore-errors \
+--exclude='.cache/' \
+--exclude='.thumbnails/' \
+--exclude='.local/share/Trash/' \
+--exclude='.mozilla/firefox/*.default-release/cache2/' \
+--exclude='.config/google-chrome/Default/Cache/' \
+--exclude='.local/share/baloo/' \
+--exclude='*.log' \
+klapek@10.0.0.55:/home/klapek/ /home/klapek/Dokumenty/backup/dell6600/

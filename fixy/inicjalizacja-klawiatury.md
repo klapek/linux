@@ -21,7 +21,25 @@ Jądro w wersji **6.8.0-110** wprowadza kluczowe poprawki, które eliminują bł
 * **Synchronizacja biometrii:** Dioda czytnika pulsuje od razu po wznowieniu sesji, co oznacza, że hardware jest gotowy bez sztucznego "budzenia" (fingerprint-warmup).
 
 ### Co z protezami?
-* **keyboard-fix.service:** Można wyłączyć/usunąć (natywna obsługa jest już stabilna).
+* **keyboard-fix.service:** Raz na trzy próby zablokowało klawisze. Lekko zmodyfikowany plik z logowaniem:
+```bash
+#!/bin/bash
+# Dajemy systemowi czas na wstępną próbę jądra
+sleep 5
+if ! grep -q "atkbd" /proc/bus/input/devices; then
+    echo "$(date): Klawiatura nie wykryta. Reanimacja..." >> /var/log/kbd-fix.log
+    echo -n "serio0" > /sys/bus/serio/drivers/atkbd/unbind
+    sleep 0.5
+    echo -n "serio0" > /sys/bus/serio/drivers/atkbd/bind
+else
+    echo "$(date): Klawiatura OK. Nie robie nic." >> /var/log/kbd-fix.log
+fi
+```
+Ponownie włączamy:
+```
+sudo systemctl enable keyboard-fix.service
+sudo systemctl start keyboard-fix.service
+```
 * **fingerprint-warmup.sh:** Można wyłączyć (USB nie wymaga już ręcznej inicjalizacji).
 * **PAM max-tries=2:** **ZALECANE** zostawić dla czystej wygody użytkowania.
 

@@ -1,3 +1,5 @@
+#polecenie do sprawdzenie pod jakim nr są czujniki: 
+#for i in /sys/class/hwmon/hwmon*/name; do echo "$i: $(cat $i)"; done
 #alignment bottom_left
 background yes
 use_xft yes
@@ -71,7 +73,7 @@ $hr
 ${font StyleBats:size=20}K${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Procesor:${font Ubuntu:size=9}
 Obciążenie ogólne: ${alignr}${font Ubuntu:style=Bold:size=11}${cpu cpu0}%${font}
 # Wykorzystanie koloru dla temperatur rdzeni
-Temp.: ${alignr}${font Ubuntu:style=Bold:size=11}${color yellow}${hwmon 6 temp 1}°C${color}${font}
+Temp.: ${alignr}${font Ubuntu:style=Bold:size=11}${color yellow}${hwmon 9 temp 1}°C${color}${font}
 # Usunięto cpubar - oszczędność i915
 #${color}Core 1:  ${cpu cpu1}% $alignr Core 2:  ${cpu cpu2}% 
 #${color}Core 3:  ${cpu cpu3}% $alignr Core 4:  ${cpu cpu4}% 

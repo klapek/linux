@@ -34,7 +34,7 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
-* **[PL/EN] [ThinkPad E16 Gen 2] Fix: Remapping 'Copilot' Key to 'AltGr' (Right Alt)(./fixy/copilot-thinkpad.md)**  
+* **[PL/EN] [ThinkPad E16 Gen 2 - Fix: Remapping 'Copilot' Key to 'AltGr' (Right Alt)](./fixy/copilot-thinkpad.md)**  
 *Zmiana mapowania klawisza Copilot na AltGr* 
 
 * **[PL/EN] [ThinkPad E16 Gen 2 (Meteor Lake) - Fingerprint & PAM Stability](./fixy/thinkpad-fprint.md)**  

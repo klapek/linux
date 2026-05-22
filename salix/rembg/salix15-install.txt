@@ -1,0 +1,11 @@
+sudo slapt-get -i python-setuptools
+
+python3 -m pip install rembg[cli] --user
+
+export PATH="$HOME/.local/bin:$PATH"
+
+python3 -m pip install onnxruntime --user
+
+python3 -m pip install "huggingface_hub<0.21.0" --user
+
+sudo slapt-get -i pngquant

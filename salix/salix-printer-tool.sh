@@ -113,8 +113,8 @@ import_printers() {
 
 # Proste menu wyboru
 echo -e "${BLUE}CUPS Migration Tool (Mint <-> Salix)${NC}"
-echo "1) Eksportuj drukarki (punkt 1)"
-echo "2) Importuj drukarki (punkt 2)"
+echo "1) Eksportuj drukarki"
+echo "2) Importuj drukarki"
 read -p "Wybierz opcję [1 lub 2]: " -r opt
 
 case $opt in

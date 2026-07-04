@@ -93,12 +93,12 @@ ${hr 1}
 ${font StyleBats:size=20}y${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Pamięć:${font Ubuntu:size=9}
 ${voffset 4}RAM: $mem / $memmax ${alignr} ${font Ubuntu:style=Bold:size=11}${memperc}% ${font}
 ${voffset 1}SWAP: $swap / $swapmax ${alignr} ${swapperc}%
-# Usunięto membar i swapbar
-Aplikacje$alignr CPU %
-${voffset 4}${top name 1}$alignr${top cpu 1}
-${top name 2}$alignr${top cpu 2}
-${top name 3}$alignr${top cpu 3}
-${top name 4}$alignr${top cpu 4}
+# Podgląd procesów pożerających najwięcej pamięci RAM
+Aplikacje$alignr RAM %
+${voffset 4}${top_mem name 1}$alignr${top_mem mem 1}
+${top_mem name 2}$alignr${top_mem mem 2}
+${top_mem name 3}$alignr${top_mem mem 3}
+${top_mem name 4}$alignr${top_mem mem 4}
 ${hr 1}
 ${font Martin Vogel's Symbols:size=20}m${font Ubuntu:size=9}${voffset -10}${offset 5}${font Ubuntu:size=13}Sieć:${font Ubuntu:size=9}
 ${voffset 4}Zewnętrzny Adres IP: $alignr ${font Ubuntu:style=Bold:size=11}${execi 3600 curl -s http://ipinfo.io/ip}${font}

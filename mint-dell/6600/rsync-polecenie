@@ -1,4 +1,4 @@
-rsync -avz --info=progress2 --ignore-errors \
+rsync -avh --info=progress2 --partial -e 'ssh -c aes128-gcm@openssh.com' \
 --exclude='.cache/' \
 --exclude='.thumbnails/' \
 --exclude='.local/share/Trash/' \
@@ -6,4 +6,5 @@ rsync -avz --info=progress2 --ignore-errors \
 --exclude='.config/google-chrome/Default/Cache/' \
 --exclude='.local/share/baloo/' \
 --exclude='*.log' \
+--exclude='.local/share/flatpak/' \
 klapek@10.0.0.55:/home/klapek/ /home/klapek/Dokumenty/backup/dell6600/

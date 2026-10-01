@@ -1,0 +1,122 @@
+#!/bin/bash
+
+# Jeśli brak interaktywnego terminala (wywołanie z Caji w tle), odpal w nowym oknie
+if [ ! -t 0 ]; then
+    exec mate-terminal --title="FFmpeg NVENC Converter" -e "$0 $*"
+fi
+
+# --- KONFIGURACJA WSTĘPNA ---
+FILES=("@")
+# Poprawka obsługi argumentów z Caja
+if [ $# -eq 0 ]; then
+    FILES=(*.mp4 *.mkv)
+else
+    FILES=("$@")
+fi
+
+QUALITY_DEF=26
+LOG_FILE="konwersja.log"
+NOTIFY=$(command -v notify-send)
+
+notify() { [ -n "$NOTIFY" ] && $NOTIFY "Serial Convert" "$1" -i dialog-information; }
+
+# --- MENU INTERAKTYWNE ---
+clear
+echo -e "\e[1m\e[34m=== SERIAL MULTI-MENU CONVERT (Dell NVENC V3) ===\e[0m"
+
+echo -e "\n\e[1mKROK 1: Wybierz tryb wydajności:\e[0m"
+echo "1) Turbo (Full NVENC CUDA - GPU - x70+ > MP4, H264, AVC, SD/720p) 🚀"
+echo "2) Hybryda (CPU Dec + GPU NVENC Enc - bezpieczny - x17 > HEVC, H265, 10bit) 🟢"
+echo "3) Szybki (GPU NVENC - x30 - stabilność i wydajność > 1080p, pliki nie dla 1.) ⚡"
+echo "4) Soft (x265 - wolny, małe pliki > długi czas kodowania, najlepsza jakość) 🐢"
+read -p "Wybór [1-4, domyślnie 3]: " MODE
+MODE=${MODE:-3}
+
+echo -e "\n\e[1mKROK 2: Typ ustawień:\e[0m"
+echo "1) Standard (26, 720p, AUDIO COPY, brak napisów) 🟢"
+echo "2) Niestandardowy"
+read -p "Wybór [1-2, domyślnie 1]: " CFG_TYPE
+CFG_TYPE=${CFG_TYPE:-1}
+
+if [ "$CFG_TYPE" == "1" ]; then
+    QUALITY=$QUALITY_DEF
+    RES="720"
+    SUBS="none"
+    AUDIO="copy"
+else
+    read -p "Jakość [18-30, domyślnie 26]: " QUALITY; QUALITY=${QUALITY:-26}
+    echo -e "\nRozdzielczość:\n1) 720p 🟢\n2) Oryginalna"
+    read -p "Wybór [1-2, domyślnie 1]: " R_C; R_C=${R_C:-1}
+    [ "$R_C" == "1" ] && RES="720" || RES="orig"
+    
+    echo -e "\nNapisy:\n1) Brak 🟢\n2) Polskie\n3) Angielskie"
+    read -p "Wybór [1-3, domyślnie 1]: " S_C; S_C=${S_C:-1}
+    case $S_C in 2) SUBS="pol" ;; 3) SUBS="eng" ;; *) SUBS="none" ;; esac
+    
+    echo -e "\nAudio:\n1) Polskie\n2) Oryginalna (Track 1)\n3) Angielskie 🟢"
+    read -p "Wybór [1-3, domyślnie 1]: " A_C; A_C=${A_C:-1}
+    case $A_C in 1) AUDIO="pol" ;; 2) AUDIO="orig" ;; 3) AUDIO="eng" ;; *) AUDIO="copy" ;; esac
+fi
+
+# --- LOGIKA MAPOWANIA ---
+case $AUDIO in
+    "pol") A_MAP="-map 0:a:m:language:pol? -map 0:a:0?" ;; 
+    "eng") A_MAP="-map 0:a:m:language:eng?" ;;
+    "orig") A_MAP="-map 0:a:0" ;;
+    *) A_MAP="-map 0:a" ;;
+esac
+
+if [ "$SUBS" != "none" ]; then
+    S_MAP="-map 0:s:m:language:$SUBS? -disposition:s:0 default"
+else
+    S_MAP="-sn" # Jawne wyłączenie napisów jeśli nie wybrano
+fi
+
+# --- PĘTLA GŁÓWNA ---
+mkdir -p "convert"
+
+for file in "${FILES[@]}"; do
+    [ -e "$file" ] || continue
+    filename=$(basename "$file")
+    output="convert/${filename%.*}.HEVC.x265-AiP.mkv"
+    
+    echo -e "\n\e[32mPrzetwarzanie: $filename\e[0m"
+    notify "Start: $filename"
+
+    case $MODE in
+        1) # TURBO (Full NVENC CUDA)
+            ffmpeg -hwaccel cuda -hwaccel_output_format cuda \
+            -i "$file" -map 0:v:0 $A_MAP $S_MAP \
+            -vf "scale_cuda=w=-2:h=$([[ "$RES" == "720" ]] && echo "720" || echo "ih")" \
+            -c:v hevc_nvenc -rc constqp -qp "$QUALITY" -c:a copy -c:s copy -y "$output" < /dev/null
+            ;;
+        2) # HYBRYDA (CPU Dec + GPU NVENC Enc)
+            ffmpeg -i "$file" \
+            -map 0:v:0 $A_MAP $S_MAP \
+            -vf "format=nv12,hwupload_cuda,scale_cuda=w=-2:h=$([[ "$RES" == "720" ]] && echo "720" || echo "ih")" \
+            -c:v hevc_nvenc -rc constqp -qp "$QUALITY" -c:a copy -c:s copy -y "$output" < /dev/null
+            ;;
+        3) # SZYBKI (GPU NVENC - maksymalna wydajność)
+            ffmpeg -hwaccel cuda -hwaccel_output_format cuda \
+            -i "$file" -map 0:v:0 $A_MAP $S_MAP \
+            -vf "scale_cuda=w=-2:h=$([[ "$RES" == "720" ]] && echo "720" || echo "ih"):interp_algo=bilinear" \
+            -c:v hevc_nvenc -preset p3 -tune hq -rc constqp -qp "$QUALITY" \
+            -c:a copy -c:s copy -max_muxing_queue_size 8192 -y "$output" < /dev/null
+            ;;
+        4) # SOFT (Pure CPU x265 - bez zmian)
+            ffmpeg -i "$file" -map 0:v:0 $A_MAP $S_MAP \
+            -vf "$([[ "$RES" == "720" ]] && echo "scale=-2:720" || echo "null")" \
+            -c:v libx265 -crf "$QUALITY" -preset faster -c:a copy -c:s copy -y "$output" < /dev/null
+            ;;
+    esac
+
+    if [ $? -eq 0 ]; then
+        echo "$(date +'%H:%M:%S') - SUKCES: $filename" >> "$LOG_FILE"
+    else
+        echo "$(date +'%H:%M:%S') - BŁĄD: $filename" >> "$LOG_FILE"
+    fi
+done
+
+echo -e "\n\e[1mKonwersja zakończona.\e[0m"
+echo "Naciśnij [ENTER], aby zamknąć to okno..."
+read -r

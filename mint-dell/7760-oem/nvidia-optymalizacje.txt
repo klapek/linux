@@ -1,0 +1,25 @@
+by na mate nie lagował sterownik nv przy przewijaniu pulpitów, należy 2d ograniczyć agresywne oszczędzanie energi:
+
+Jak to ustawić raz a dobrze (przez X11):
+
+    Stwórz dedykowany plik konfiguracyjny dla Nvidii w /etc/X11/xorg.conf.d/:
+    Bash
+
+    sudo mkdir -p /etc/X11/xorg.conf.d/
+
+    Wklej następującą regułę, która wymusi tryb high-performance (Option "Coolbits" "1" oraz PowerMizerMode=1):
+    Bash
+
+    sudo bash -c 'cat <<EOF > /etc/X11/xorg.conf.d/10-nvidia-powermizer.conf
+    Section "Device"
+        Identifier     "Nvidia Card"
+        Driver         "nvidia"
+        Option         "RegistryDwords" "PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerDefaultAC=0x1"
+    EndSection
+    EOF'
+
+Co robi ta opcja?
+
+    PowerMizerDefaultAC=0x1 – ustawia domyślny tryb pracy na zasilaczu sieciowym jako Maximum Performance (odpowiednik jedynki w nvidia-settings).
+
+    Pozwala to całkowicie pominąć wpis w autostarcie użytkownika i działanie przez sudo w konsoli — system sam odpala kartę na pełnej responsywności przy starcie X11!

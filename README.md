@@ -34,6 +34,9 @@ Moje centrum dowodzenia rozproszone na kilku maszynach. Każda ma swoją specyfi
 ## 🚀 Ostatnie Fixy (Knowledge Packs)
 *Najnowsze rozwiązania techniczne:*
 
+* **[PL/EN] [ThinkPad Keyboard Auto-Dimming via rc.local in systemd](./fixy/thinkpad-keyboard-autodim.md)**  
+*Automatyczne wygaszanie klawiatury ThinkPada przez /etc/rc.local (systemd)* 
+
 * **[PL/EN] [ThinkPad E16 Gen 2 - Fix: Remapping 'Copilot' Key to 'AltGr' (Right Alt)](./fixy/copilot-thinkpad.md)**  
 *Zmiana mapowania klawisza Copilot na AltGr* 
 

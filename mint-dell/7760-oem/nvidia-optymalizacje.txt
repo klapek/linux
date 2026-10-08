@@ -10,13 +10,13 @@ Jak to ustawić raz a dobrze (przez X11):
     Wklej następującą regułę, która wymusi tryb high-performance (Option "Coolbits" "1" oraz PowerMizerMode=1):
     Bash
 
-    sudo bash -c 'cat <<EOF > /etc/X11/xorg.conf.d/10-nvidia-powermizer.conf
-    Section "Device"
-        Identifier     "Nvidia Card"
-        Driver         "nvidia"
-        Option         "RegistryDwords" "PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerDefaultAC=0x1"
-    EndSection
-    EOF'
+sudo tee /etc/X11/xorg.conf.d/10-nvidia-powermizer.conf > /dev/null << 'EOF'
+Section "Device"
+    Identifier     "Nvidia Card"
+    Driver         "nvidia"
+    Option         "RegistryDwords" "PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerDefaultAC=0x1"
+EndSection
+EOF
 
 Co robi ta opcja?
 

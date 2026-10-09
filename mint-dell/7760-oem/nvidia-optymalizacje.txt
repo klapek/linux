@@ -3,7 +3,11 @@ by na mate nie lagował sterownik nv przy przewijaniu pulpitów, należy 2d ogra
 lepiej lokalnie w home
 
 -----------
-Sposób 1: Autostart w sesji MATE (Najbezpieczniejszy — zero ryzyka dla Xorg)Aplikujemy ustawienie wydajności PowerMizer automatycznie po zalogowaniu do pulpitu. Jeśli cokolwiek poszłoby nie tak, system i tak się uruchomi.1.1. Stwórz skrypt wymuszający wysoki profil wydajności:Terminal.Wykonaj w terminalu:Bashmkdir -p ~/.config/autostart
+Sposób 1: Autostart w sesji MATE (Najbezpieczniejszy — zero ryzyka dla Xorg)Aplikujemy ustawienie wydajności PowerMizer automatycznie po zalogowaniu do pulpitu. Jeśli cokolwiek poszłoby nie tak, system i tak się uruchomi.1.1. Stwórz skrypt wymuszający wysoki profil wydajności:Terminal.
+
+Wykonaj w terminalu:Bash
+
+mkdir -p ~/.config/autostart
 cat << 'EOF' > ~/.config/autostart/nvidia-powermizer.desktop
 [Desktop Entry]
 Type=Application
@@ -13,7 +17,13 @@ Hidden=false
 NoDisplay=false
 X-MATE-Autostart-enabled=true
 EOF
-Weryfikacja: Powstanie plik autostartu należący do Twojego użytkownika (klapek).2.2. Nadaj uprawnienia wykonywania:Terminal.Bashchmod +x ~/.config/autostart/nvidia-powermizer.desktop
+
+Weryfikacja: Powstanie plik autostartu należący do Twojego użytkownika (klapek).
+
+2.2. Nadaj uprawnienia wykonywania:Terminal.Bash
+
+chmod +x ~/.config/autostart/nvidia-powermizer.desktop
+
 Weryfikacja: Po każdym zalogowaniu system wywoła GPUPowerMizerMode=1 (Maximum Performance), eliminując przycięcia paneli MATE i kursorów.
 ------------
 
